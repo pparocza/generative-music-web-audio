@@ -18,7 +18,7 @@ instruments_and_fx_library.js
 <blockquote>
  
 BUFFERS
-  - a pair of commonly used buffers, one which generates a constant (since the Web Audio API's ConstantSourceNode is not supported by a number of browsers), and another that outputs noise
+  - a pair of commonly used buffers - one that generates a constant value (since the Web Audio API's ConstantSourceNode is not supported by a number of browsers), and another that outputs noise
 
 CV NODES
   - 8 objects for creating parameter control signals (control voltages) such as Envelopes and LFOs.
