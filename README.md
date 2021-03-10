@@ -12,7 +12,31 @@
 <details>
   <summary>CV NODES</summary><blockquote>
   - nodes to be used as control signals
+
+   <!-- BREAKPOINT -->
   
+  <details>
+  <summary>BreakPoint</summary><blockquote>
+  - Output a custom breakpoint function starting at 0, and specify exponential slopes of each segment
+
+   <details>
+   <summary>Properties</summary><blockquote>
+   - p1 <br>
+   - p2 <br>
+   </details>
+    
+   <details>
+   <summary>Methods</summary><blockquote
+    - m1() <br>
+    - m2() <br>
+   </details>
+    
+  </details>
+  
+  <!-- -->
+  
+  <!-- ENVELOPE -->
+
   <details>
   <summary>Envelope</summary><blockquote>
   - output a custom breakpoint function starting at 0
@@ -30,8 +54,9 @@
     - stopAtTime() <br>
    </details>
     
-    
   </details>
+  
+  <!-- -->
 
 </details>
 
@@ -42,6 +67,9 @@
 <details>
   <summary>CATEGORY</summary><blockquote>
   - nodes to be used as control signals
+
+
+  <!-- NODE TEMPLATE -->
   
   <details>
   <summary>NODE</summary><blockquote>
@@ -59,8 +87,9 @@
     - m2() <br>
    </details>
     
-    
   </details>
+  
+  <!-- -->
 
 </details>
 
