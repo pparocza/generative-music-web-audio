@@ -8,7 +8,7 @@ A collection of custom synthesizers and effects made with the Web Audio API
 NOTE:
 
 - the Piece Page Template is a complete HTML template for creating the pieces at the links above
-- since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are provided above, and detailed below (doc and API coming soon)
+- since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are detailed below (doc and API coming soon)
 
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
@@ -16,18 +16,14 @@ instruments_and_fx_library.js<blockquote>
 
 <!-- CV NODES -->
 
-CV NODES<blockquote>
-  - nodes to be used as control signals
-
-BreakPoint
-  - Output a custom breakpoint function starting at 0, and specify exponential slopes of each segment
-  
-Envelope
-  - output a custom breakpoint function starting at 0
-
-</blockquote>
-</blockquote>
-</blockquote>
+CV NODES
+  - Objects for creating parameter control signals such as Envelopes and LFOs.<blockquote>
+    <details>
+      <summary>list of nodes (8)</summary><blockquote>
+    BreakPoint, EnvelopeBuffer, Envelope, Envelope2, ExpEnvelope, ExpEnvelope2, LFO, PeriodicLFO
+      </blockquote>
+    </details>
+  </blockquote>
 
 <!-- INSTRUMENTS AND FX.js -->
 
