@@ -3,7 +3,7 @@
 A collection of custom synthesizers and effects made with the Web Audio API
 
   - [live piece made with this library](http://paulparoczai.hostingerapp.com/live/community_infinite_offline/community_infinite.html?__cf_chl_jschl_tk__=aae609b14446b8146b4fc487b8eb160d720261d3-1615345578-0-AXt1Gmu9jU9uzzjHQlAzgwjiOVU7p2jG9YFDz9pczrI1nDSwfooKTnFW23q9A3psWoHJvfBWcT0HRuQ5wG_Hp2lREXEcMHd5sUqjNl9-XMPXZppv0ropj2fje_N-biqUtpYpACD8vPSWSGS2GVuxW618X3dHEYLNM_aA8PwSfhAv9sOUmzmxPzCrp-0_R2DKl_IZqxNTiYy_xHRoIW8Y46AY7gA0oMbn5sv5kDVBYAPl3U0HksPrf-vUpLD77oVUf1TPV9t_AI2UCMxmFNZq2ekdvUzypUx3IaMCjubNmLCyhSKwHfmiCAVPjjOjm7cs81rc_Y40MoxW2zU-mf2ynqX7zJ8WuxGqng2Szu6C43rWugkR2ZnPgEQakIEcDZBx29TGsSYjZiKW85Vly3l5_nfZOpjq0tmsPBeSuC4bWxHvsXDwO_E2QqsBbCoqsA9FbRhLLKfy3LqVGD_z8zpwuH4)
-  - [list of pieces made with this library](https://www.paulparoczai.net/#/webaudio/)
+  - [collection of pieces made with this library](https://www.paulparoczai.net/#/webaudio/)
 
 NOTE:
 
