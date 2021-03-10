@@ -2,8 +2,7 @@
 
 ## FILE DETAILS
 
-
-        <!-- INSTRUMENTS AND FX LIBRARY.js -->
+<!-- INSTRUMENTS AND FX LIBRARY.js -->
 
 <details>
   <summary>INSTRUMENTS_AND_FX-LIBRARY.js</summary><blockquote>
@@ -70,7 +69,7 @@
 
 </details>
 
-        <!-- INSTRUMENTS AND FX.js -->
+<!-- INSTRUMENTS AND FX.js -->
 
 <details>
   <summary>INSTRUMENTS_AND_FX.js</summary><blockquote>
@@ -107,7 +106,7 @@
 
 </details>
 
-        <!-- UTILITIES.js -->
+<!-- UTILITIES.js -->
 
 <details>
   <summary>UTILITIES.js</summary><blockquote>
