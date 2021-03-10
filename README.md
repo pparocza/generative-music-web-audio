@@ -4,7 +4,7 @@
 - list of standard instruments and effects
 
 <details>
-  <summary>NODE TYPES</summary><blockquote>
+  <summary>INSTRUMENTS_AND_FX-LIBRARY.js</summary><blockquote>
 
 <!-- CV NODES -->
 
@@ -71,7 +71,7 @@
 - list of standard instruments and effects
 
 <details>
-  <summary>NODE TYPES</summary><blockquote>
+  <summary>INSTRUMENTS_AND_FX.js</summary><blockquote>
 
 <!-- CV NODES -->
 
@@ -138,7 +138,7 @@
 - list of standard instruments and effects
 
 <details>
-  <summary>NODE TYPES</summary><blockquote>
+  <summary>UTILITIES.js</summary><blockquote>
 
 <!-- CV NODES -->
 
