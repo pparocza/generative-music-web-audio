@@ -19,7 +19,7 @@ INSTRUMENTS_AND_FX-LIBRARY.js<blockquote>
 CV NODES<blockquote>
   - nodes to be used as control signals
 
-BreakPoint<blockquote>
+BreakPoint
   - Output a custom breakpoint function starting at 0, and specify exponential slopes of each segment
   
 Envelope
