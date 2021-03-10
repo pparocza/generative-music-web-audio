@@ -12,7 +12,7 @@ NOTE:
 
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
-INSTRUMENTS_AND_FX-LIBRARY.js<blockquote>
+instruments_and_fx_library.js<blockquote>
 
 <!-- CV NODES -->
 
@@ -31,14 +31,16 @@ Envelope
 
 <!-- INSTRUMENTS AND FX.js -->
 
-INSTRUMENTS_AND_FX.js
+instruments_and_fx.js<blockquote>
   
  Effect
   - output a custom breakpoint function starting at 0
 
  Instrument
   - output a custom breakpoint function starting at 0
-  - 
+
+</blockquote>
+
 <!-- UTILITIES.js -->
 
-UTILITIES.js
+utilities.js<blockquote>
