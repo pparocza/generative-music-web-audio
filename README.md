@@ -13,6 +13,7 @@ NOTE:
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
 instruments_and_fx_library.js<blockquote>
+  - a collection of custom processing, control, synthesis, and interface objects shared by all pieces made with this library
 
 <!-- CV NODES -->
 
@@ -24,6 +25,12 @@ CV NODES
   
 EFFECTS
   - 14 objects for processing audio signals, including custom filters, delays and time-based effects, and waveshapers.
+
+INSTRUMENTS
+  - 13 objects for synthesizing audio signals - some based on existing synthesizer architectures such as the Yamaha DX7 and Moog MiniMoog, others custom-built and unique to this library.
+
+MULTI OBJECTS
+  - 13 objects for synthesizing audio signals - some based on existing synthesizer architectures such as the Yamaha DX7 and Moog MiniMoog, others custom-built and unique to this library.
 
 <!-- INSTRUMENTS AND FX.js -->
 
