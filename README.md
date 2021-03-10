@@ -13,7 +13,9 @@ NOTE:
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
 instruments_and_fx_library.js
-  - a collection of custom processing, control, synthesis, and interface objects shared by all pieces made with this library <blockquote>
+  - a collection of custom processing, control, synthesis, and interface objects shared by all pieces made with this library
+ 
+<blockquote>
  
 BUFFERS
   - a pair of commonly used buffers, one which generates a constant (since the Web Audio API's ConstantSourceNode is not supported by a number of browsers), and another that outputs noise
@@ -29,6 +31,8 @@ INSTRUMENTS
 
 MULTI OBJECTS
   - 13 objects for synthesizing audio signals - some based on existing synthesizer architectures such as the Yamaha DX7 and Moog MiniMoog, others custom-built and unique to this library.
+
+</blockquote>
 
 <!-- INSTRUMENTS AND FX.js -->
 
