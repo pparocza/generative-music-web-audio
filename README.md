@@ -1,4 +1,5 @@
 # Generative Music in the Web Audio API
+Pieces made with this library:<br>
 https://www.paulparoczai.net/#/webaudio/
 
 ## FILE DETAILS
