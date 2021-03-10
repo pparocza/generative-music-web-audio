@@ -1,5 +1,10 @@
-# INSTRUMENTS_AND_FX-LIBRARY.js
+# Generative Music in the Web Audio API
+
+## INSTRUMENTS_AND_FX-LIBRARY.js
 - list of standard instruments and effects
+
+<details>
+  <summary>NODE TYPES</summary>
 
 <!-- CV NODES -->
 
@@ -86,3 +91,5 @@
 </details>
 
 <!-- -->
+
+</details>
