@@ -5,6 +5,8 @@ A collection of custom synthesizers and effects made with the Web Audio API
 Pieces made with this library:<br>
 https://www.paulparoczai.net/#/webaudio/
 
+NOTE:
+
 - "PIECE_PAGE_TEMPLATE.zip" is a complete HTML template for creating the pieces at the link above
 - since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are presented outside of the template folder as well, and are detailed below
 
