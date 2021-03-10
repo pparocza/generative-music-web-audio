@@ -42,8 +42,10 @@ PRESETS
 
 <!-- INSTRUMENTS AND FX.js -->
 
-instruments_and_fx.js<blockquote>
+instruments_and_fx.js
   - file for rapid prototyping and management of the instruments and effects being built for a specific piece
+
+<blockquote>
   
  Effect
   - object within which to design signal-processing chains, which are stored as methods
