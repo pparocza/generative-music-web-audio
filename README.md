@@ -8,171 +8,37 @@ A collection of custom synthesizers and effects made with the Web Audio API
 NOTE:
 
 - the Piece Page Template is a complete HTML template for creating the pieces at the links above
-- since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are provided above, and detailed below
+- since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are provided above, and detailed below (doc and API coming soon)
 
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
-<details>
-  <summary>INSTRUMENTS_AND_FX-LIBRARY.js</summary><blockquote>
+INSTRUMENTS_AND_FX-LIBRARY.js<blockquote>
 
 <!-- CV NODES -->
 
-<details>
-  <summary>CV NODES</summary><blockquote>
+CV NODES<blockquote>
   - nodes to be used as control signals
 
-   <!-- BREAKPOINT -->
-  
-  <details>
-  <summary>BreakPoint</summary><blockquote>
+BreakPoint<blockquote>
   - Output a custom breakpoint function starting at 0, and specify exponential slopes of each segment
-
-   <details>
-   <summary>Properties</summary><blockquote>
-   - p1 <br>
-   - p2 <br>
-   </details>
-    
-   <details>
-   <summary>Methods</summary><blockquote
-    - m1() <br>
-    - m2() <br>
-   </details>
-    
-  </details>
   
-  <!-- -->
-  
-  <!-- ENVELOPE -->
-
-  <details>
-  <summary>Envelope</summary><blockquote>
+Envelope
   - output a custom breakpoint function starting at 0
 
-   <details>
-   <summary>Properties</summary><blockquote>
-   - buffer
-   </details>
-    
-   <details>
-   <summary>Methods</summary><blockquote
-    - start() <br>
-    - startAtTime() <br>
-    - stop() <br>
-    - stopAtTime() <br>
-   </details>
-    
-  </details>
-  
-  <!-- -->
-
-</details>
-
-<!-- -->
-
-<!-- CATEGORY TEMPLATE -->
-
-<details>
-  <summary>CATEGORY</summary><blockquote>
-  - nodes to be used as control signals
-
-
-  <!-- NODE TEMPLATE -->
-  
-  <details>
-  <summary>NODE</summary><blockquote>
-  - description
-
-   <details>
-   <summary>Properties</summary><blockquote>
-   - p1 <br>
-   - p2 <br>
-   </details>
-    
-   <details>
-   <summary>Methods</summary><blockquote
-    - m1() <br>
-    - m2() <br>
-   </details>
-    
-  </details>
-  
-  <!-- -->
-
-</details>
-
-<!-- -->
-
-</details>
+</blockquote>
+</blockquote>
+</blockquote>
 
 <!-- INSTRUMENTS AND FX.js -->
 
-<details>
-  <summary>INSTRUMENTS_AND_FX.js</summary><blockquote>
-
-<!-- CATEGORY TEMPLATE -->
-
-<details>
-  <summary>CATEGORY</summary><blockquote>
-  - nodes to be used as control signals
+INSTRUMENTS_AND_FX.js
   
-  <details>
-  <summary>NODE</summary><blockquote>
-  - description
+ Effect
+  - output a custom breakpoint function starting at 0
 
-   <details>
-   <summary>Properties</summary><blockquote>
-   - p1 <br>
-   - p2 <br>
-   </details>
-    
-   <details>
-   <summary>Methods</summary><blockquote
-    - m1() <br>
-    - m2() <br>
-   </details>
-    
-    
-  </details>
-
-</details>
-
-<!-- -->
-
-</details>
-
+ Instrument
+  - output a custom breakpoint function starting at 0
+  - 
 <!-- UTILITIES.js -->
 
-<details>
-  <summary>UTILITIES.js</summary><blockquote>
-
-<!-- CATEGORY TEMPLATE -->
-
-<details>
-  <summary>CATEGORY</summary><blockquote>
-  - nodes to be used as control signals
-  
-  <details>
-  <summary>NODE</summary><blockquote>
-  - description
-
-   <details>
-   <summary>Properties</summary><blockquote>
-   - p1 <br>
-   - p2 <br>
-   </details>
-    
-   <details>
-   <summary>Methods</summary><blockquote
-    - m1() <br>
-    - m2() <br>
-   </details>
-    
-    
-  </details>
-
-</details>
-
-<!-- -->
-
-</details>
+UTILITIES.js
