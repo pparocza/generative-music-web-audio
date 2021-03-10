@@ -16,14 +16,14 @@ instruments_and_fx_library.js<blockquote>
 
 <!-- CV NODES -->
 
+BUFFERS
+  - a pair of commonly used buffers, one which generates a constant (since the Web Audio API's ConstantSourceNode is not supported by a number of browsers), and another that outputs noise
+
 CV NODES
-  - Objects for creating parameter control signals such as Envelopes and LFOs.<blockquote>
-    <details>
-      <summary>list of nodes (8)</summary><blockquote>
-    BreakPoint, EnvelopeBuffer, Envelope, Envelope2, ExpEnvelope, ExpEnvelope2, LFO, PeriodicLFO
-      </blockquote>
-    </details>
-  </blockquote>
+  - 8 objects for creating parameter control signals (control voltages) such as Envelopes and LFOs.
+  
+EFFECTS
+  - 14 objects for processing audio signals, including custom filters, delays and time-based effects, and waveshapers.
 
 <!-- INSTRUMENTS AND FX.js -->
 
