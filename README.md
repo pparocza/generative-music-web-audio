@@ -61,7 +61,26 @@ utilities.js
   - commonly used functions and values for algorithmic composition and value generation
 
 <blockquote>
-  
- 
+
+Arrays
+- functions for generating and operating on arrays
+
+Graphing
+- functions for printing the contents of a buffer as a graph in the brower console
+
+MIDI to Frequency
+- function that returns a frequency in Hertz for a specified MIDI value
+
+Randoms
+- functions that return random values within a specified range
+
+Sequence
+- object with a variety of methods for generating sequences of values (additive, exponential, random, etc.)
+
+Tuner
+- function that returns an array containing the MIDI values of a scale specified by mode and tonic as arguments
+
+Values
+- global variables for easy access to common musical values like tuning ratios
   
 </blockquote>
