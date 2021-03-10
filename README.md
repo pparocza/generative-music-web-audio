@@ -1,4 +1,4 @@
-# Generative Music in the Web Audio API
+# Generative Music Web Audio
 
 A collection of custom synthesizers and effects made with the Web Audio API
 
