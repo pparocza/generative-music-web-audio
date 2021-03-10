@@ -17,12 +17,12 @@
   - output a custom breakpoint function starting at 0
 
    <details>
-   <summary>Properties</summary>
+   <summary>Properties</summary><blockquote>
    - buffer
    </details>
     
    <details>
-   <summary>Methods</summary>
+   <summary>Methods</summary><blockquote
     - start() <br>
     - startAtTime() <br>
     - stop() <br>
@@ -36,57 +36,30 @@
 
 <!-- -->
 
-<!-- EFFECTS -->
-
-<details>
-  <summary>EFFECTS</summary>
-  - description
-  
-  <details>
-  <summary>Node</summary>
-  - description
-
-   <details>
-   <summary>Properties</summary>
-   - p1 <br>
-   - p2 <br>
-   </details>
-    
-   <details>
-   <summary>Methods</summary>
-    - m1() <br>
-    - m2() <br>
-   </details>
-    
- </details>
-
-</details>
-
-<!-- -->
-
 <!-- CATEGORY TEMPLATE -->
 
 <details>
-  <summary>CATEGORY</summary>
-  - description
+  <summary>CATEGORY</summary><blockquote>
+  - nodes to be used as control signals
   
   <details>
-  <summary>Node</summary>
+  <summary>NODE</summary><blockquote>
   - description
 
    <details>
-   <summary>Properties</summary>
+   <summary>Properties</summary><blockquote>
    - p1 <br>
    - p2 <br>
    </details>
     
    <details>
-   <summary>Methods</summary>
+   <summary>Methods</summary><blockquote
     - m1() <br>
     - m2() <br>
    </details>
     
- </details>
+    
+  </details>
 
 </details>
 
