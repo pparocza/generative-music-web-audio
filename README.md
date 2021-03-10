@@ -10,7 +10,6 @@
 <!-- CV NODES -->
 
 <details>
-  <br>
   <summary>CV NODES</summary><blockquote>
   - nodes to be used as control signals
   
