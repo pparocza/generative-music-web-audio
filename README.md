@@ -7,7 +7,7 @@ A collection of custom synthesizers and effects made with the Web Audio API
 
 NOTE:
 
-- the Piece Page Template is a complete HTML template for creating the pieces at the link above
+- the Piece Page Template is a complete HTML template for creating the pieces at the links above
 - since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are presented outside of the template folder as well, and are detailed below
 
 ## FILE DETAILS
