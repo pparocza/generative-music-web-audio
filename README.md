@@ -6,11 +6,11 @@
 
 <details>
   <summary>INSTRUMENTS_AND_FX-LIBRARY.js</summary><blockquote>
-  - list of standard instruments and effects
 
 <!-- CV NODES -->
 
 <details>
+  <br>
   <summary>CV NODES</summary><blockquote>
   - nodes to be used as control signals
   
@@ -73,7 +73,6 @@
 
 <details>
   <summary>INSTRUMENTS_AND_FX.js</summary><blockquote>
-  - list of standard instruments and effects
 
 <!-- CATEGORY TEMPLATE -->
 
@@ -110,7 +109,6 @@
 
 <details>
   <summary>UTILITIES.js</summary><blockquote>
-  - list of standard instruments and effects
 
 <!-- CATEGORY TEMPLATE -->
 
