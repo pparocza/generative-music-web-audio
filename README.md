@@ -57,4 +57,11 @@ instruments_and_fx.js
 
 <!-- UTILITIES.js -->
 
-utilities.js<blockquote>
+utilities.js
+  - commonly used functions and values for algorithmic composition and value generation
+
+<blockquote>
+  
+ 
+  
+</blockquote>
