@@ -12,11 +12,10 @@ NOTE:
 
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
-instruments_and_fx_library.js<blockquote>
+instruments_and_fx_library.js
   - a collection of custom processing, control, synthesis, and interface objects shared by all pieces made with this library
-
-<!-- CV NODES -->
-
+ 
+<blockquote>
 BUFFERS
   - a pair of commonly used buffers, one which generates a constant (since the Web Audio API's ConstantSourceNode is not supported by a number of browsers), and another that outputs noise
 
