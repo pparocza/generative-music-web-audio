@@ -30,19 +30,26 @@ INSTRUMENTS
   - 13 objects for synthesizing audio signals - some based on existing synthesizer architectures such as the Yamaha DX7 and Moog MiniMoog, others custom-built and unique to this library.
 
 MULTI OBJECTS
-  - 13 objects for synthesizing audio signals - some based on existing synthesizer architectures such as the Yamaha DX7 and Moog MiniMoog, others custom-built and unique to this library.
+  - 11 objects which provide an interface for quickly loading multiple objects of the same type (i.e. MultiBuffer, MultiOsc, MultiPan, etc.)
+
+MY NODES
+  - 12 custom interfaces for Web Audio API nodes (i.e. MyOsc, MyDelay, MyGain)
+
+PRESETS
+  - 3 objects for storing commonly used configurations of certain nodes (BufferPreset, ConvolverPreset, EnvelopePreset)
 
 </blockquote>
 
 <!-- INSTRUMENTS AND FX.js -->
 
 instruments_and_fx.js<blockquote>
+  - file for rapid prototyping and management of the instruments and effects being built for a specific piece
   
  Effect
-  - output a custom breakpoint function starting at 0
+  - object within which to design signal-processing chains, which are stored as methods
 
  Instrument
-  - output a custom breakpoint function starting at 0
+  - object within which to design signal-generating chains, which are stored as methods
 
 </blockquote>
 
