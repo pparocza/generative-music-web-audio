@@ -4,7 +4,7 @@
 - list of standard instruments and effects
 
 <details>
-  <summary>NODE TYPES</summary>
+  <summary>NODE TYPES</summary><blockquote>
 
 <!-- CV NODES -->
 
