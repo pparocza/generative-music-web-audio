@@ -9,11 +9,11 @@
 <!-- CV NODES -->
 
 <details>
-  <summary>CV NODES</summary>
+  <summary>CV NODES</summary><blockquote>
   - nodes to be used as control signals
   
   <details>
-  <summary>Envelope</summary>
+  <summary>Envelope</summary><blockquote>
   - output a custom breakpoint function starting at 0
 
    <details>
