@@ -2,8 +2,7 @@
 
 A collection of custom synthesizers and effects made with the Web Audio API
 
-  - Pieces made with this library:<br>
-  - https://www.paulparoczai.net/#/webaudio/
+  - Pieces made with this library: https://www.paulparoczai.net/#/webaudio/
 
 NOTE:
 
