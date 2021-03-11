@@ -12,7 +12,7 @@ NOTE:
 
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
-## instruments_and_fx_library.js
+### instruments_and_fx_library.js
   - a collection of custom processing, control, synthesis, and interface objects shared by all pieces made with this library
  
 <blockquote>
@@ -42,7 +42,7 @@ PRESETS
 
 <!-- INSTRUMENTS AND FX.js -->
 
-## instruments_and_fx.js
+### instruments_and_fx.js
   - file for rapid prototyping and management of the instruments and effects being built for a specific piece
 
 <blockquote>
@@ -57,7 +57,7 @@ PRESETS
 
 <!-- UTILITIES.js -->
 
-## utilities.js
+### utilities.js
   - commonly used functions and values for algorithmic composition and value generation
 
 <blockquote>
