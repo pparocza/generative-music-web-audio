@@ -8,7 +8,7 @@ A collection of custom synthesizers and effects made with the Web Audio API
 NOTE:
 
 - the "Piece Page Template" Release is a complete HTML/JS template for creating music in the same manner as in the pieces at the links above
-- since many of the files included in the template are specific to my own workflow, files containing specific synths, effects, and utilities used in actual audio generation are detailed below (doc and API coming soon)
+- since many of the files included in the template are specific to my own workflow, files containing specific synthesizers, effects, and utilities used in actual audio generation are detailed below (doc and API coming soon)
 
 <!-- INSTRUMENTS AND FX LIBRARY.js -->
 
