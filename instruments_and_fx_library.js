@@ -1,3 +1,4 @@
+// template for an instrument or effect object
 function InstrumentConstructorTemplate(){
 
 	this.output = audioCtx.createGain();
@@ -8,6 +9,7 @@ InstrumentConstructorTemplate.prototype = {
 
 	output: this.output,
 
+	// connect the output of this node to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -20,10 +22,12 @@ InstrumentConstructorTemplate.prototype = {
 
 //--------------------------------------------------------------
 
-// BUFFERS
+// BUFFERS (2)
+//  - a pair of commonly used buffers
 
 //--------------------------------------------------------------
 
+// create a buffer containing a single value
 function BufferConstant(value){
 
 	this.value = value;
@@ -31,7 +35,7 @@ function BufferConstant(value){
 
 	this.bufferSource = audioCtx.createBufferSource();
 
-	this.buffer = audioCtx.createBuffer(1, audioCtx.sampleRate*1, audioCtx.sampleRate);
+	this.buffer = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
 
 		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
 			this.nowBuffering = this.buffer.getChannelData(this.channel);
@@ -46,6 +50,7 @@ BufferConstant.prototype = {
 	output: this.output,
 	buffer: this.buffer,
 
+	// output constant (on loop) immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.loop = "true";
@@ -54,10 +59,12 @@ BufferConstant.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting constant immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting constant (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -70,6 +77,7 @@ BufferConstant.prototype = {
 
 	},
 
+	// stop outputting constant at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -78,6 +86,7 @@ BufferConstant.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -86,10 +95,12 @@ BufferConstant.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// create a buffer containing random values
 function BufferNoise(){
 
 	this.playbackRate = 1;
@@ -113,6 +124,7 @@ BufferNoise.prototype = {
 	buffer: this.buffer,
 	playbackRate: this.playbackRate,
 
+	// output buffer contents (on loop) immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.loop = "true";
@@ -122,10 +134,12 @@ BufferNoise.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting buffer contents (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -139,6 +153,7 @@ BufferNoise.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -147,6 +162,7 @@ BufferNoise.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -159,10 +175,14 @@ BufferNoise.prototype = {
 
 //--------------------------------------------------------------
 
-// CV NODES
+// CV NODES (8)
+//  - objects for creating parameter control signals (control voltages)
 
 //--------------------------------------------------------------
 
+// create a buffer containing a custom breakpoint function from an array of "duration, value" pairs,
+// starting at 0
+// expArray specifies exponential curves applied to each line segment
 function BreakPoint(envArray, expArray){
 
 	this.output = audioCtx.createGain();
@@ -270,6 +290,7 @@ BreakPoint.prototype = {
 	loop: this.loop,
 	playbackRate: this.playbackRate,
 
+	// output buffer contents immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer;
@@ -279,10 +300,12 @@ BreakPoint.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting buffer contents at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -296,6 +319,7 @@ BreakPoint.prototype = {
 
 	},
 
+	// stop outputting constant at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -304,6 +328,7 @@ BreakPoint.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -312,16 +337,20 @@ BreakPoint.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// container for envelope presets
 function EnvelopeBuffer(){
 
 }
 
 EnvelopeBuffer.prototype = {
 
+	// create a buffer containing a custom breakpoint function from an array of "time, value" pairs
+	// expArray specifies exponential curves applied to each line segment
 	makeExpEnvelope: function(envArray, expArray){
 
 		this.envArray = envArray;
@@ -427,6 +456,7 @@ EnvelopeBuffer.prototype = {
 		}
 	},
 
+	// create a custom breakpoint function from an array of "time, value" pairs
 	makeEnvelope: function(envArray){
 
 		this.envArray = envArray;
@@ -501,6 +531,8 @@ EnvelopeBuffer.prototype = {
 
 //--------------------------------------------------------------
 
+// create a custom breakpoint function from an array of "time, value" pairs,
+// starting at 0
 function Envelope(envArray){
 
 	this.output = audioCtx.createGain();
@@ -578,6 +610,7 @@ Envelope.prototype = {
 	buffer: this.buffer,
 	loop: this.loop,
 
+	// output buffer contents immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer;
@@ -586,10 +619,12 @@ Envelope.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting buffer contents at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -602,6 +637,7 @@ Envelope.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -610,6 +646,7 @@ Envelope.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -623,6 +660,8 @@ Envelope.prototype = {
 
 //--------------------------------------------------------------
 
+// create a custom breakpoint function from an array of "time, value" pairs,
+// starting at a specified value
 function Envelope2(startValue, envArray){
 
 	this.output = audioCtx.createGain();
@@ -704,6 +743,7 @@ Envelope2.prototype = {
 	buffer: this.buffer,
 	loop: this.loop,
 
+	// output buffer contents immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer;
@@ -712,10 +752,12 @@ Envelope2.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting buffer contents at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -728,6 +770,7 @@ Envelope2.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -736,6 +779,7 @@ Envelope2.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -748,6 +792,9 @@ Envelope2.prototype = {
 
 //--------------------------------------------------------------
 
+// create a custom breakpoint function from an array of "time, value" pairs,
+// starting at 0
+// expArray specifies exponential curves applied to each line segment
 function ExpEnvelope(envArray, expArray){
 
 	this.output = audioCtx.createGain();
@@ -861,6 +908,7 @@ ExpEnvelope.prototype = {
 	buffer: this.buffer,
 	loop: this.loop,
 
+	// output buffer contents immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer;
@@ -869,10 +917,12 @@ ExpEnvelope.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting buffer contents at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -885,6 +935,7 @@ ExpEnvelope.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -893,6 +944,7 @@ ExpEnvelope.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -905,6 +957,9 @@ ExpEnvelope.prototype = {
 
 //--------------------------------------------------------------
 
+// create a custom breakpoint function from an array of "time, value" pairs,
+// starting at a specified value
+// expArray specifies exponential curves applied to each line segment
 function ExpEnvelope2(startValue, envArray, expArray){
 
 	this.output = audioCtx.createGain();
@@ -1014,6 +1069,7 @@ ExpEnvelope2.prototype = {
 	buffer: this.buffer,
 	loop: this.loop,
 
+	// output buffer contents immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer;
@@ -1022,10 +1078,12 @@ ExpEnvelope2.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// begin outputting buffer contents at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -1038,6 +1096,7 @@ ExpEnvelope2.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -1046,6 +1105,7 @@ ExpEnvelope2.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1058,6 +1118,9 @@ ExpEnvelope2.prototype = {
 
 //--------------------------------------------------------------
 
+// create a buffer to be filled with a custom shape (via MyBuffer methods),
+// scale its output bewteen the specified, min and max, and loop it at the
+// specified rate
 function LFO(min, max, rate){
 
 	this.output = audioCtx.createGain();
@@ -1085,18 +1148,23 @@ LFO.prototype = {
 
 	output: this.output,
 	buffer: this.buffer,
+	min: this.min,
+	max: this.max,
 	rate: this.rate,
 
+	// output buffer contents (on loop) immediately
 	start: function(){
 		this.buffer.start();
 		this.constant.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.buffer.stopAtTime();
 		this.constant.stopAtTime();
 	},
 
+	// begin outputting buffer contents (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -1106,6 +1174,7 @@ LFO.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -1115,6 +1184,7 @@ LFO.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1127,6 +1197,8 @@ LFO.prototype = {
 
 //--------------------------------------------------------------
 
+// fill a buffer with a specified periodic wave, scale its output
+// bewteen the specified min and max, and loop it at the specified rate
 function PeriodicLFO(min, max, rate, rArray, iArray){
 
 	this.output = audioCtx.createGain();
@@ -1158,6 +1230,7 @@ PeriodicLFO.prototype = {
 	pWave: this.pWave,
 	bG: this.bG,
 
+	// output buffer contents (on loop) immediately
 	start: function(){
 		this.pWave = new MyPeriodicOscillator(this.rate, this.rArray, this.iArray);
 		this.pWave.connect(this.bG);
@@ -1165,11 +1238,13 @@ PeriodicLFO.prototype = {
 		this.constant.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.pWave.stop();
 		this.constant.stop();
 	},
 
+	// begin outputting buffer contents (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -1181,6 +1256,7 @@ PeriodicLFO.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -1190,6 +1266,7 @@ PeriodicLFO.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1202,12 +1279,12 @@ PeriodicLFO.prototype = {
 
 //--------------------------------------------------------------
 
-// EFFECTS
+// EFFECTS (14)
+//  - objects for processing audio signals
 
 //--------------------------------------------------------------
 
-//--------------------------------------------------------------
-
+// multiply an incoming signal by the output of an LFO
 function AmplitudeModulator(min, max, rate){
 
 	this.min = min;
@@ -1233,14 +1310,17 @@ AmplitudeModulator.prototype = {
 	smoothingFilter: this.smoothingFilter,
 	output: this.output,
 
+	// begin lfo immediately
 	start: function(){
 		this.lfo.start();
 	},
 
+	// stop lfo immediately
 	stop: function(){
 		this.lfo.stop();
 	},
 
+	// start lfo at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -1249,6 +1329,7 @@ AmplitudeModulator.prototype = {
 
 	},
 
+	// stop lfo at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -1257,6 +1338,7 @@ AmplitudeModulator.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1269,6 +1351,8 @@ AmplitudeModulator.prototype = {
 
 //--------------------------------------------------------------
 
+// create a network of delays that model the resonance of a membrane
+// described by "dimensionValues" and "modeArray"
 function DelayBank(dimensionValues, modeArray){
 
 	this.input = audioCtx.createGain();
@@ -1320,6 +1404,7 @@ DelayBank.prototype = {
 	input: this.input,
 	output: this.output,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1333,6 +1418,8 @@ DelayBank.prototype = {
 
 //--------------------------------------------------------------
 
+// stereo delay gated by a square wave LFO, with the feedback gain
+// modulated by another LFO - initialized with preset methods
 function DelayTapLFOFeedback(){
 
 	this.input = audioCtx.createGain();
@@ -1345,11 +1432,19 @@ DelayTapLFOFeedback.prototype = {
 	input: this.input,
 	output: this.output,
 
+	// begin gate and feedback LFO()s immediately
 	start: function(){
 		this.tO.start();
 		this.feedbackLFO.start();
 	},
 
+	// stop gate and feedback LFO()s immediately
+	stop: function(){
+		this.tO.stop();
+		this.feedbackLFO.stop();
+	},
+
+	// start gate and feedback LFO()s (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -1359,6 +1454,17 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// stop gate and feedback LFO()s (on loop) at specified time (in seconds)
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		this.tO.stopAtTime(this.time);
+		this.feedbackLFO.stopAtTime(this.time);
+
+	},
+
+	// template for a preset method
 	presetTemplate: function(){
 
 		this.delayL = delayL;
@@ -1391,6 +1497,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 1
 	preset1: function(){
 
 		this.delayL = 0.1;
@@ -1423,6 +1530,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 2
 	preset2: function(){
 
 		this.delayL = 0.1;
@@ -1455,6 +1563,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 3
 	preset3: function(){
 
 		this.delayL = 0.1;
@@ -1487,6 +1596,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 4
 	preset4: function(tRate, dCycleRange){
 
 		this.delayL = 0.11;
@@ -1519,6 +1629,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 5
 	preset5: function(dCycleRange){
 
 		this.delayL = 0.3;
@@ -1551,6 +1662,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 6
 	preset6: function(tRate, fbRate, dCycleStart, dCycleLength){
 
 		this.delayL = 0.3;
@@ -1583,6 +1695,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 7
 	preset7: function(tRate, dCycleStart, dCycleLength){
 
 		this.delayL = randomFloat(0.1, 0.3);
@@ -1615,6 +1728,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 8
 	preset8: function(tRate, fbRate, dCycleStart, dCycleLength){
 
 		this.delayL = randomFloat(0.005, 0.015);
@@ -1647,6 +1761,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 9
 	preset9: function(tRate, fbRate, dCycleStart, dCycleLength){
 
 		this.delayL = randomFloat(0.005, 0.015);
@@ -1679,6 +1794,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 10
 	preset10: function(tRate, fbRate, dCycleStart, dCycleLength){
 
 		this.delayL = randomFloat(0.005, 0.015);
@@ -1714,6 +1830,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// preset 11
 	preset11: function(tRate, fbRate, dCycleStart, dCycleLength, tapSFilterFreq){
 
 		this.delayL = randomFloat(0.005, 0.015);
@@ -1749,6 +1866,7 @@ DelayTapLFOFeedback.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1757,10 +1875,12 @@ DelayTapLFOFeedback.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// sweep the cutoff frequency of a filter with an Envelope
 function FilterEnvelope(type, freq, Q, eArray){
 
 	this.type = type;
@@ -1785,10 +1905,17 @@ FilterEnvelope.prototype = {
 	output: this.output,
 	envelope: this.envelope,
 
+	// start the Envelope() immediately
 	start: function(){
 		this.envelope.start();
 	},
 
+	// stop the Envelope() immediately
+	stop: function(){
+		this.envelope.stop();
+	},
+
+	// start the Envelope() at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -1797,6 +1924,16 @@ FilterEnvelope.prototype = {
 
 	},
 
+	// stop the Envelope() at specified time (in seconds)
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		this.envelope.startAtTime(this.time);
+
+	},
+
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1805,10 +1942,13 @@ FilterEnvelope.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// create a smooth transition between changing constant values
+// by sending them through a lowpass filter
 function FilterFade(initLevel){
 
 	this.initLevel = initLevel;
@@ -1838,6 +1978,7 @@ FilterFade.prototype = {
 	fadeConstantGain: this.fadeConstantGain,
 	fadeConstantFilter: this.fadeConstantFilter,
 
+	// change BufferConstant() value immediately
 	start: function(fadeTarget, filterFreq){
 
 		this.fadeTarget = fadeTarget;
@@ -1848,6 +1989,7 @@ FilterFade.prototype = {
 
 	},
 
+	// change BufferConstant() value at specified time (in seconds)
 	startAtTime: function(fadeTarget, filterFreq, time){
 
 		this.fadeTarget = fadeTarget;
@@ -1859,6 +2001,7 @@ FilterFade.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1867,10 +2010,13 @@ FilterFade.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// amplitude modulate an incoming signal with two separate square
+// waves in series
 function OffsetSquareAM(f1, f2, d1, d2){
 
 	this.f1 = f1;
@@ -1915,16 +2061,39 @@ OffsetSquareAM.prototype = {
 	driverTwo: this.driverTwo,
 	smoothingFilter: this.smoothingFilter,
 
+	// start square wave modulators (on loop) immediately
 	start: function(){
 		this.driverOne.start();
 		this.driverTwo.start();
 	},
 
+	// start square wave modulators (on loop) at specified time (in seconds)
+	startAtTime: function(time){
+
+		this.time = time;
+
+		this.driverOne.startAtTime(this.time);
+		this.driverTwo.startAtTime(this.time);
+
+	},
+
+	// stop square wave modulators immediately
 	stop: function(){
 		this.driverOne.stop();
 		this.driverTwo.stop();
 	},
 
+	// start square wave modulators at specified time (in seconds)
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		this.driverOne.stopAtTime(this.time);
+		this.driverTwo.stopAtTime(this.time);
+
+	},
+
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1938,6 +2107,7 @@ OffsetSquareAM.prototype = {
 
 //--------------------------------------------------------------
 
+// delay and pan an incoming signal
 function PanDelay(delayLength, feedback, panVal){
 
 	this.input = audioCtx.createGain();
@@ -1960,6 +2130,7 @@ PanDelay.prototype = {
 
 	output: this.output,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -1973,6 +2144,7 @@ PanDelay.prototype = {
 
 //--------------------------------------------------------------
 
+// create a network of parallel filters
 function ParallelFilters(typeArray, fArray, QArray){
 
 	this.typeArray = typeArray;
@@ -1997,6 +2169,7 @@ ParallelFilters.prototype = {
 	input: this.input,
 	output: this.output,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2009,6 +2182,7 @@ ParallelFilters.prototype = {
 
 //--------------------------------------------------------------
 
+// create a reverb effect with a pair of delays
 function RevDelay(){
 
 	this.input = audioCtx.createGain();
@@ -2030,6 +2204,7 @@ RevDelay.prototype = {
 	output: this.output,
 	delay: this.delay,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2043,6 +2218,8 @@ RevDelay.prototype = {
 
 //--------------------------------------------------------------
 
+// loop through a random set of pan values (number of values determined
+// by "quant") at a specified rate
 function RhythmPan(rate, quant){
 
 	this.input = audioCtx.createGain();
@@ -2078,16 +2255,19 @@ RhythmPan.prototype = {
 	pBR: this.pBR,
 	pBL: this.pBL,
 
+	// start pan value buffers (on loop) immediately
 	start: function(){
 		this.pBR.start();
 		this.pBL.start();
 	},
 
+	// stop pan value buffers immediately
 	stop: function(){
 		this.pBR.stop();
 		this.pBL.stop();
 	},
 
+	// start pan value buffers (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -2097,6 +2277,7 @@ RhythmPan.prototype = {
 
 	},
 
+	// stop pan value buffers at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -2106,6 +2287,7 @@ RhythmPan.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2119,6 +2301,7 @@ RhythmPan.prototype = {
 
 //--------------------------------------------------------------
 
+// create a network of filters to model vocal formants
 function SchwaBox(vowelPreset){
 
 	this.vowelPreset = vowelPreset;
@@ -2181,6 +2364,7 @@ SchwaBox.prototype = {
 	input: this.input,
 	output: this.output,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2193,6 +2377,7 @@ SchwaBox.prototype = {
 
 //--------------------------------------------------------------
 
+// create a network of filters to model a pipe of specified length (in meters)
 function SemiOpenPipe(length){
 
 	this.input = audioCtx.createGain();
@@ -2231,6 +2416,7 @@ SemiOpenPipe.prototype = {
 
 	lengthInlet: this.lengthInlet,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2243,6 +2429,7 @@ SemiOpenPipe.prototype = {
 
 //--------------------------------------------------------------
 
+// create a network of filters in series
 function SeriesFilters(typeArray, fArray, QArray){
 
 	this.typeArray = typeArray;
@@ -2278,6 +2465,7 @@ SeriesFilters.prototype = {
 	input: this.input,
 	output: this.output,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2290,6 +2478,7 @@ SeriesFilters.prototype = {
 
 //--------------------------------------------------------------
 
+// create a network of parallel waveshapers
 function ShaperBank(nShapers, inGainArray, outGainArray){
 
 	this.inGainArray = inGainArray;
@@ -2340,6 +2529,7 @@ ShaperBank.prototype = {
 
 	nShapers: this.nShapers,
 
+	// connect the output node of an indivdual waveshaper to the input of another object
 	connectOutput: function(audioNode, idx){
 
 		var idx = idx;
@@ -2353,6 +2543,7 @@ ShaperBank.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2366,10 +2557,12 @@ ShaperBank.prototype = {
 
 //--------------------------------------------------------------
 
-// INSTRUMENTS
+// INSTRUMENTS (13)
+//  - objects for synthesizing audio signals
 
 //--------------------------------------------------------------
 
+// output the results of an amplitude modulation generated from specified parameters
 function AmBasic(cFreq, mFreq, mGain){
 
 	this.output = audioCtx.createGain();
@@ -2397,6 +2590,7 @@ AmBasic.prototype = {
 	mFreq: this.mFreq,
 	mDepth: this.mDepth,
 
+	// output signal (on loop) immediately
 	start: function(){
 		this.m.connect(this.mG);
 		this.c.connect(this.aG);
@@ -2404,11 +2598,13 @@ AmBasic.prototype = {
 		this.c.start();
 	},
 
+	// stop signal immediately
 	stop: function(){
 		this.m.stop();
 		this.c.stop();
 	},
 
+	// output signal (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -2420,6 +2616,7 @@ AmBasic.prototype = {
 
 	},
 
+	// stop signal at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -2429,6 +2626,7 @@ AmBasic.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -2442,6 +2640,8 @@ AmBasic.prototype = {
 
 //--------------------------------------------------------------
 
+// synthesizer based on the Yamaha DX7 (operator configuration algorithms
+// and presets stored in methods)
 function DX7(){
 
 	this.output = audioCtx.createGain();
@@ -2464,7 +2664,671 @@ DX7.prototype = {
 	fb: this.fb,
 	fund: this.fund,
 
-	preset0(){
+	// set values of specified Operator()
+	setOp: function(op, type, freq, gain, envelope){
+
+		this.op = op;
+		this.type = type;
+		this.freq = freq;
+		this.gain = gain;
+		this.envelope = envelope;
+
+		this.ops[op].op.setOp(this.type, this.freq, this.gain, this.envelope);
+
+	},
+
+	// set oscillator types of all Operator()s
+	setTypes: function(typeArray){
+		this.typeArray = typeArray;
+		for(var i=0; i<6; i++){
+			this.ops[i+1].op.setType(this.typeArray[i]);
+		}
+	},
+
+	// set output gains of all Operator()s
+	setGains: function(gainArray){
+		this.gainArray = gainArray;
+		for(var i=0; i<6; i++){
+			this.ops[i+1].op.setGain(this.gainArray[i]);
+		}
+	},
+
+	// set frequency value of oscillators in all Operator()s
+	setFreqs: function(freqArray){
+		this.freqArray = freqArray;
+		for(var i=0; i<6; i++){
+			this.ops[i+1].op.setFrequency(this.freqArray[i]);
+		}
+	},
+
+	// set amplitude envelopes of all Operator()s
+	setEnvelopes: function(envelopeArray){
+		this.envelopeArray = envelopeArray;
+		for(var i=0; i<6; i++){
+			this.ops[i+1].op.setEnvelope(this.envelopeArray[i]);
+		}
+	},
+
+	// algorithm 1
+	a1: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 2
+	a2: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[2].op.connect(this.fb);
+		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 3
+	a3: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 4
+	a4: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 5
+	a5: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 6
+	a6: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[5].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 7
+	a7: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 8
+	a8: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.fb);
+		this.fb.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 9
+	a9: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[2].op.connect(this.fb);
+		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 10
+	a10: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.fb);
+		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 11
+	a11: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 12
+	a12: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[2].op.connect(this.fb);
+		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 13
+	a13: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 14
+	a14: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 15
+	a15: function(){
+
+		this.output.gain.value = 0.5;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[2].op.connect(this.fb);
+		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+
+	},
+
+	// algorithm 16
+	a16: function(){
+
+		this.output.gain.value = 1;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+
+	},
+
+	// algorithm 17
+	a17: function(){
+
+		this.output.gain.value = 1;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[2].op.connect(this.fb);
+		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+
+	},
+
+	// algorithm 18
+	a18: function(){
+
+		this.output.gain.value = 1;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[4].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.fb);
+		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+
+	},
+
+	// algorithm 19
+	a19: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 20
+	a20: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.fb);
+		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 21
+	a21: function(){
+
+		this.output.gain.value = 0.25;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.fb);
+		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 22
+	a22: function(){
+
+		this.output.gain.value = 0.25;
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 23
+	a23: function(){
+
+		this.output.gain.value = 0.25;
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 24
+	a24: function(){
+
+		this.output.gain.value = 0.2;
+
+		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 25
+	a25: function(){
+
+		this.output.gain.value = 0.2;
+
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 26
+	a26: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 27
+	a27: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
+
+		this.ops[3].op.connect(this.fb);
+		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+
+	},
+
+	// algorithm 28
+	a28: function(){
+
+		this.output.gain.value = 0.33;
+
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
+
+		this.ops[5].op.connect(this.fb);
+		this.fb.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[6].op.connect(this.output);
+
+	},
+
+	// algorithm 29
+	a29: function(){
+
+		this.output.gain.value = 0.25;
+
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 30
+	a30: function(){
+
+		this.output.gain.value = 0.25;
+
+		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
+		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
+
+		this.ops[5].op.connect(this.fb);
+		this.fb.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[6].op.connect(this.output);
+
+	},
+
+	// algorithm 31
+	a31: function(){
+
+		this.output.gain.value = 0.2;
+
+		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+
+	},
+
+	// algorithm 32
+	a32: function(){
+
+		this.output.gain.value = 0.166;
+
+		this.ops[6].op.connect(this.fb);
+		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
+
+		this.ops[1].op.connect(this.output);
+		this.ops[2].op.connect(this.output);
+		this.ops[3].op.connect(this.output);
+		this.ops[4].op.connect(this.output);
+		this.ops[5].op.connect(this.output);
+		this.ops[6].op.connect(this.output);
+
+	},
+
+	// preset 1
+	preset0: function(){
 
 		this.ops[1].op.setOp("sine", fund, 1, [1, 1, 0, 1]);
 		this.ops[2].op.setOp("sine", 0, 0, [0, 0.001]);
@@ -2475,7 +3339,8 @@ DX7.prototype = {
 
 	},
 
-	preset1(){
+	// preset 2
+	preset1: function(){
 
 		this.ops[1].op.setOp("sine", this.fund, 1, [1, 1, 0, 1]);
 		this.ops[2].op.setOp("sine", this.fund, this.fund, [1, 0.001, 0, 1.9]);
@@ -2486,7 +3351,8 @@ DX7.prototype = {
 
 	},
 
-	preset2(){
+	// preset 3
+	preset2: function(){
 
 		this.ops[1].op.setOp("sine", this.fund, 1, [1, 1, 0, 1]);
 		this.ops[2].op.setOp("sine", this.fund, this.fund, [1, 0.001, 0, 1.9]);
@@ -2497,7 +3363,8 @@ DX7.prototype = {
 
 	},
 
-	modSwell(){
+	// preset 4
+	modSwell: function(){
 
 		// outOps: 3
 		// algs: 7, 2, 8
@@ -2516,7 +3383,8 @@ DX7.prototype = {
 
 	},
 
-	alienSwell(){
+	// preset 5
+	alienSwell: function(){
 
 		// outOps: 3
 		// algs: 7, 1, 2
@@ -2535,7 +3403,8 @@ DX7.prototype = {
 
 	},
 
-	noiseTwine(){
+	// preset 6
+	noiseTwine: function(){
 
 		// outOps: 3
 		// algs: 7, 8, 2
@@ -2557,7 +3426,8 @@ DX7.prototype = {
 
 	},
 
-	noiseToTone(){
+	// preset 7
+	noiseToTone: function(){
 
 		// outOps: 3
 		// algs: 7, 8, 1, 2
@@ -2579,7 +3449,8 @@ DX7.prototype = {
 
 	},
 
-	a16Brass(){
+	// preset 8
+	a16BrassL: function(){
 
 		// outOps: 1
 		// algs: 16
@@ -2603,632 +3474,7 @@ DX7.prototype = {
 
 	},
 
-	setTypes(typeArray){
-		this.typeArray = typeArray;
-		for(var i=0; i<6; i++){
-			this.ops[i+1].op.setType(this.typeArray[i]);
-		}
-	},
-
-	setGains(gainArray){
-		this.gainArray = gainArray;
-		for(var i=0; i<6; i++){
-			this.ops[i+1].op.setGain(this.gainArray[i]);
-		}
-	},
-
-	setFreqs(freqArray){
-		this.freqArray = freqArray;
-		for(var i=0; i<6; i++){
-			this.ops[i+1].op.setFrequency(this.freqArray[i]);
-		}
-	},
-
-	setEnvelopes(envelopeArray){
-		this.envelopeArray = envelopeArray;
-		for(var i=0; i<6; i++){
-			this.ops[i+1].op.setEnvelope(this.envelopeArray[i]);
-		}
-	},
-
-	setOp(op, type, freq, gain, envelope){
-
-		this.op = op;
-		this.type = type;
-		this.freq = freq;
-		this.gain = gain;
-		this.envelope = envelope;
-
-		this.ops[op].op.setOp(this.type, this.freq, this.gain, this.envelope);
-
-	},
-
-	a1: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a2: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[2].op.connect(this.fb);
-		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a3: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a4: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a5: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a6: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[5].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a7: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a8: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.fb);
-		this.fb.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a9: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[2].op.connect(this.fb);
-		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a10: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.fb);
-		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a11: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a12: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[2].op.connect(this.fb);
-		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a13: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a14: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a15: function(){
-
-		this.output.gain.value = 0.5;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[2].op.connect(this.fb);
-		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-
-	},
-
-	a16: function(){
-
-		this.output.gain.value = 1;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-
-	},
-
-	a17: function(){
-
-		this.output.gain.value = 1;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[2].op.connect(this.fb);
-		this.fb.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-
-	},
-
-	a18: function(){
-
-		this.output.gain.value = 1;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[4].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.fb);
-		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-
-	},
-
-	a19: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a20: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.fb);
-		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a21: function(){
-
-		this.output.gain.value = 0.25;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-		this.ops[3].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.fb);
-		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a22: function(){
-
-		this.output.gain.value = 0.25;
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a23: function(){
-
-		this.output.gain.value = 0.25;
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a24: function(){
-
-		this.output.gain.value = 0.2;
-
-		this.ops[6].op.connect(this.ops[3].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a25: function(){
-
-		this.output.gain.value = 0.2;
-
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a26: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a27: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[6].op.connect(this.ops[4].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.ops[2].op.osc.frequencyInlet);
-
-		this.ops[3].op.connect(this.fb);
-		this.fb.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-
-	},
-
-	a28: function(){
-
-		this.output.gain.value = 0.33;
-
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[2].op.connect(this.ops[1].op.osc.frequencyInlet);
-
-		this.ops[5].op.connect(this.fb);
-		this.fb.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[6].op.connect(this.output);
-
-	},
-
-	a29: function(){
-
-		this.output.gain.value = 0.25;
-
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a30: function(){
-
-		this.output.gain.value = 0.25;
-
-		this.ops[5].op.connect(this.ops[4].op.osc.frequencyInlet);
-		this.ops[4].op.connect(this.ops[3].op.osc.frequencyInlet);
-
-		this.ops[5].op.connect(this.fb);
-		this.fb.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[6].op.connect(this.output);
-
-	},
-
-	a31: function(){
-
-		this.output.gain.value = 0.2;
-
-		this.ops[6].op.connect(this.ops[5].op.osc.frequencyInlet);
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-
-	},
-
-	a32: function(){
-
-		this.output.gain.value = 0.166;
-
-		this.ops[6].op.connect(this.fb);
-		this.fb.connect(this.ops[6].op.osc.frequencyInlet);
-
-		this.ops[1].op.connect(this.output);
-		this.ops[2].op.connect(this.output);
-		this.ops[3].op.connect(this.output);
-		this.ops[4].op.connect(this.output);
-		this.ops[5].op.connect(this.output);
-		this.ops[6].op.connect(this.output);
-
-	},
-
+	// start all Operator()s immediately
 	start: function(){
 
 		for(var i=0; i<6; i++){
@@ -3237,6 +3483,18 @@ DX7.prototype = {
 
 	},
 
+	// start all Operator()s at specified time (in seconds)
+	startAtTime: function(time){
+
+		this.time = time;
+
+		for(var i=0; i<6; i++){
+			this.ops[i+1].op.startAtTime(this.time);
+		}
+
+	},
+
+	// stop all Operator()s immediately
 	stop: function(){
 
 		for(var i=0; i<6; i++){
@@ -3246,6 +3504,18 @@ DX7.prototype = {
 
 	},
 
+	// stop all Operator()s at specified time (in seconds)
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		for(var i=0; i<6; i++){
+			this.ops[i+1].op.stopAtTime(this.time);
+		}
+
+	},
+
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -3259,6 +3529,7 @@ DX7.prototype = {
 
 //--------------------------------------------------------------
 
+// waveshaper synthesizer that sounds like an electric piano
 function ElectricPiano(){
 
 	this.output = audioCtx.createGain();
@@ -3308,6 +3579,7 @@ ElectricPiano.prototype = {
 	eG: this.eG,
 	timbreGain: this.timbreGain,
 
+	// play a tone of specified frequency and duration at specified time (in seconds)
 	playAtTime: function(time, freq, duration){
 
 		this.time = time;
@@ -3321,18 +3593,21 @@ ElectricPiano.prototype = {
 
 	},
 
+	// start synthesizer oscillator (on loop) immediately
 	start: function(){
 
 		this.osc.start();
 
 	},
 
+	// stop syntheiszier oscillator immediately
 	stop: function(){
 
 		this.osc.stop();
 
 	},
 
+	// start synthesizer oscillator (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -3341,6 +3616,7 @@ ElectricPiano.prototype = {
 
 	},
 
+	// stop synthesizer oscillator at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -3349,19 +3625,7 @@ ElectricPiano.prototype = {
 
 	},
 
-	connectOutput: function(audioNode, idx){
-
-		var idx = idx;
-
-		if (audioNode.hasOwnProperty('input') == 1){
-			this.amGain[idx].gain.connect(audioNode.input);
-		}
-		else {
-			this.amGain[idx].gain.connect(audioNode);
-		}
-
-	},
-
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -3375,6 +3639,7 @@ ElectricPiano.prototype = {
 
 //--------------------------------------------------------------
 
+// Operator with ExpEnvelope
 function ExpOperator(){
 
 	this.output = audioCtx.createGain();
@@ -3401,7 +3666,8 @@ ExpOperator.prototype = {
 	gain: this.gain,
 	output: this.output,
 
-	setOp(type, freq, gainVal, eArray, expArray){
+	// set operator parameters and initialize nodes
+	setOp: function(type, freq, gainVal, eArray, expArray){
 
 		this.type = type;
 		this.freq = freq;
@@ -3421,19 +3687,23 @@ ExpOperator.prototype = {
 
 	},
 
-	setFrequency(freq){
+	// set the frequency of the operator's oscillator
+	setFrequency: function(freq){
 		this.osc.osc.frequency.value = freq;
 	},
 
-	setGain(gainVal){
+	// set the output gain of the operator
+	setGain: function(gainVal){
 		this.gain.gain.gain.value = gainVal;
 	},
 
-	setType(type){
+	// set the type of the operator's oscillator
+	setType: function(type){
 		this.osc.osc.type = type;
 	},
 
-	setEnvelope(eArray, expArray){
+	// set the operator's envelope
+	setEnvelope: function(eArray, expArray){
 
 		this.eArray = eArray;
 		this.expArray = expArray;
@@ -3444,14 +3714,17 @@ ExpOperator.prototype = {
 
 	},
 
+	// start the operator's envelope immediately
 	start: function(){
 		this.envelope.start();
 	},
 
+	// stop the operator's envelope immediately
 	stop: function(){
 		this.envelope.stop();
 	},
 
+	// start the operator's envelope at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -3460,6 +3733,7 @@ ExpOperator.prototype = {
 
 	},
 
+	// stop the operator's envelope at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -3468,6 +3742,7 @@ ExpOperator.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -3481,6 +3756,7 @@ ExpOperator.prototype = {
 
 //--------------------------------------------------------------
 
+// output the results of a frequency modulation generated from specified parameters
 function FmBasic(cFreq, mFreq, mGain){
 
 	this.output = audioCtx.createGain();
@@ -3502,6 +3778,7 @@ FmBasic.prototype = {
 	mFreq: this.mFreq,
 	mGain: this.mGain,
 
+	// output signal (on loop) immediately
 	start: function(){
 		this.c.start();
 		this.m.start();
@@ -3511,11 +3788,13 @@ FmBasic.prototype = {
 		this.c.connect(this.output);
 	},
 
+	// stop outputting signal immediately
 	stop: function(){
 		this.c.stop();
 		this.m.stop();
 	},
 
+	// start outputting signal (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -3529,6 +3808,7 @@ FmBasic.prototype = {
 
 	},
 
+	// stop outputting signal at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -3538,6 +3818,7 @@ FmBasic.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -3551,6 +3832,7 @@ FmBasic.prototype = {
 
 //--------------------------------------------------------------
 
+// synthesizer based on the Moog MiniMoog
 function MiniMoog(){
 
 	this.output = audioCtx.createGain();
@@ -3602,1401 +3884,10 @@ function MiniMoog(){
 
 }
 
-MiniMoog.prototype = {
-
-	output: this.output,
-
-	osc1: this.osc1,
-	osc2: this.osc2,
-	osc3: this.osc3,
-	noise: this.noise,
-
-	octave1: this.octave1,
-	octave2: this.octave2,
-	octave3: this.octave3,
-
-	gain1: this.gain1,
-	gain2: this.gain2,
-	gain3: this.gain3,
-	noiseGain: this.noiseGain,
-
-	amplitudeEnvelope: this.amplitudeEnvelope,
-	amplitudeAttack: this.amplitudeAttack,
-	amplitudeDecay: this.amplitudeDecay,
-	amplitudeSustain: this.amplitudeSustain,
-	amplitudeSustainLevel: this.amplitudeSustainLevel,
-
-	filterEnvelope: this.filterEnvelope,
-	filterAttack: this.filterAttack,
-	filterAttackTarget: this.filterAttackTarget,
-	filterDecay: this.filterDecay,
-	filterSustain: this.filterSustain,
-	filterSustainLevel: this.filterSustainLevel,
-
-	filter: this.filter,
-
-	amplitudeGain: this.amplitudeGain,
-
-playLoopAtTime: function(freq, time){
-
-		this.freq = freq;
-		this.time = time;
-
-		this.amplitudeEnvelope.loop = true;
-		this.filterEnvelope.loop = true;
-
-		this.amplitudeEnvelope.connect(this.amplitudeGain.gain.gain);
-		this.filterEnvelope.connect(this.filter.biquad.frequency);
-
-		this.osc1.osc.frequency.setValueAtTime(this.freq*this.octave1, this.time);
-		this.osc2.osc.frequency.setValueAtTime(this.freq*this.octave2, this.time);
-		this.osc3.osc.frequency.setValueAtTime(this.freq*this.octave3, this.time);
-
-		this.amplitudeEnvelope.startAtTime(this.time);
-		this.filterEnvelope.startAtTime(this.time);
-
-
-	},
-
-	playAtTime: function(freq, time){
-
-		this.freq = freq;
-		this.time = time;
-
-		this.amplitudeEnvelope.connect(this.amplitudeGain.gain.gain);
-		this.filterEnvelope.connect(this.filter.biquad.frequency);
-
-		this.osc1.osc.frequency.setValueAtTime(this.freq*this.octave1, this.time);
-		this.osc2.osc.frequency.setValueAtTime(this.freq*this.octave2, this.time);
-		this.osc3.osc.frequency.setValueAtTime(this.freq*this.octave3, this.time);
-
-		this.amplitudeEnvelope.startAtTime(this.time);
-		this.filterEnvelope.startAtTime(this.time);
-
-	},
-
-
-	stop: function(){
-
-		this.osc1.stop();
-		this.osc2.stop();
-		this.osc3.stop();
-
-	},
-
-	stopAtTime: function(time){
-
-		this.time = time;
-
-		this.osc1.stopAtTime(this.time);
-		this.osc2.stopAtTime(this.time);
-		this.osc3.stopAtTime(this.time);
-
-	},
-
-	presetTemplate: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=22000;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=1;
-		this.filterDecay=1;
-		this.filterSustainLevel=1*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=1;
-		this.amplitudeDecay=1;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trSteelDrum: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 2;
-		this.octave3 = 0.5;
-
-		this.osc1.osc.type = "triangle";
-		this.osc2.osc.type = "triangle";
-		this.osc3.osc.type = "triangle";
-
-		this.osc2.osc.detune.value = 300;
-		this.osc3.osc.detune.value = 350;
-
-		this.gain1.gain.gain.value = 0.8;
-		this.gain2.gain.gain.value = 0.8;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=80;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.001;
-		this.filterDecay=0.8;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.001;
-		this.amplitudeDecay=0.4;
-		this.amplitudeSustainLevel=0.6;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trThunder: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0.8;
-
-		this.filterAttackTarget=155;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.001;
-		this.filterDecay=0.8;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.001;
-		this.amplitudeDecay=5;
-		this.amplitudeSustainLevel=0;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trSurf: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0.8;
-
-		this.filterAttackTarget=290;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=3;
-		this.filterDecay=1;
-		this.filterSustainLevel=0.2*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.8;
-		this.amplitudeDecay=3;
-		this.amplitudeSustainLevel=0;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trMoonChord: function(){
-
-		// nice around 224Hz
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "square";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "square";
-
-		this.osc3.osc.detune.value = 500;
-
-		this.gain1.gain.gain.value = 0.3;
-		this.gain2.gain.gain.value = 0.6;
-		this.gain3.gain.gain.value = 0.3;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=540;
-		this.filter.biquad.Q.value = 7;
-		this.filterAttack=0.6;
-		this.filterDecay=0.6;
-		this.filterSustainLevel=0.5*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=2;
-		this.amplitudeSustainLevel=1;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trGoom: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "square";
-		this.osc2.osc.type = "square";
-		this.osc3.osc.type = "square";
-
-		this.gain1.gain.gain.value = 0.6;
-		this.gain2.gain.gain.value = 0.6;
-		this.gain3.gain.gain.value = 0.6;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=400;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.8;
-		this.filterSustainLevel=0.8*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.01;
-		this.amplitudeDecay=1;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-
-	trGoodSound: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 2;
-		this.octave3 = 4;
-
-		this.osc2.osc.detune.value = 300;
-		this.osc3.osc.detune.value = 600;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "square";
-		this.osc3.osc.type = "sawtooth";
-
-		this.gain1.gain.gain.value = 0.5;
-		this.gain2.gain.gain.value = 0.5;
-		this.gain3.gain.gain.value = 0.5;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=123;
-		this.filter.biquad.Q.value=3;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.2;
-		this.filterSustainLevel=0.5*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=0.6;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trFatBass: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 0.25;
-		this.octave2 = 0.5;
-		this.octave3 = 0.5;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sawtooth";
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 1;
-		this.gain3.gain.gain.value = 1;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=300;
-		this.filter.biquad.Q.value = 5;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.3;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=0.6;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trTrilogy: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 0.5;
-		this.octave2 = 4;
-		this.octave3 = 0.5;
-
-		this.osc1.osc.type = "square";
-		this.osc2.osc.type = "square";
-		this.osc3.osc.type = "square";
-
-		this.gain1.gain.gain.value = 0.2;
-		this.gain2.gain.gain.value = 0.8;
-		this.gain3.gain.gain.value = 0.2;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=530;
-		this.filter.biquad.Q.value = 6;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.8;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=0.4;
-		this.amplitudeSustainLevel=1;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trBassDrum: function(){
-
-		// cool at 224
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc2.osc.detune.value = -200;
-		this.osc3.osc.detune.value = -500;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sawtooth";
-
-		this.gain1.gain.gain.value = 0.8;
-		this.gain2.gain.gain.value = 0.8;
-		this.gain3.gain.gain.value = 0.8;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=80;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.001;
-		this.filterDecay=0.6;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.001;
-		this.amplitudeDecay=0.8;
-		this.amplitudeSustainLevel=0;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trTuba: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=155;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.4;
-		this.filterDecay=0.4;
-		this.filterSustainLevel=0.8*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.2;
-		this.amplitudeDecay=0.35;
-		this.amplitudeSustainLevel=0.7;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trHarpsichord: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "square";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0.3;
-		this.gain2.gain.gain.value = 0.5;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=20000;
-		this.filter.biquad.Q.value = 7;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.3;
-		this.filterSustainLevel=1*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=0.3;
-		this.amplitudeSustainLevel=0;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trAquatarkus: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc2.osc.detune.value = 400;
-		this.osc3.osc.detune.value = 700;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sawtooth";
-
-		this.gain1.gain.gain.value = 0.8;
-		this.gain2.gain.gain.value = 0.8;
-		this.gain3.gain.gain.value = 0.8;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=123.7;
-		this.filter.biquad.Q.value = 6;
-		this.filterAttack=0.01;
-		this.filterDecay=0.2;
-		this.filterSustainLevel=0.5*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0;
-		this.amplitudeDecay=0.4;
-		this.amplitudeSustainLevel=0.3;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trSteelDrum: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 4;
-		this.octave2 = 4;
-		this.octave3 = 0.5;
-
-		this.osc3.osc.detune.value = 700;
-
-		this.osc1.osc.type = "triangle";
-		this.osc2.osc.type = "triangle";
-		this.osc3.osc.type = "triangle";
-
-		this.gain1.gain.gain.value = 0.8;
-		this.gain2.gain.gain.value = 0.8;
-		this.gain3.gain.gain.value = 0.4;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=300;
-		this.filter.biquad.Q.value = 5;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.4;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=0.4;
-		this.amplitudeSustainLevel=1;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	myBlock: function(){
-
-		// very nice at 280Hz - much like the attack of the Ben Babbitt
-		// Dark Rum Noir block
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 4;
-		this.octave2 = 4;
-		this.octave3 = 0.5;
-
-		this.osc3.osc.detune.value = 700;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sawtooth";
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 1;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=300;
-		this.filter.biquad.Q.value = 5;
-		this.filterAttack=0.001;
-		this.filterDecay=0.01;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.001;
-		this.amplitudeDecay=0.4;
-		this.amplitudeSustainLevel=1;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trCatherineOfAragon: function(){
-
-		// very very nice bass (really nice quality around 280Hz and 140Hz)
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 0.25;
-		this.octave2 = 0.5;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0.6;
-		this.gain2.gain.gain.value = 0.6;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=159.92;
-		this.filter.biquad.Q.value = 6.8;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.8;
-		this.filterSustainLevel=0*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=1;
-		this.amplitudeSustainLevel=0;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trCoALongDecay: function(){
-
-		// very very nice bass (really nice quality around 280Hz and 140Hz)
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 0.25;
-		this.octave2 = 0.5;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0.6;
-		this.gain2.gain.gain.value = 0.6;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=159.92;
-		this.filter.biquad.Q.value = 6.8;
-		this.filterAttack=0.0005;
-		this.filterDecay=0.8;
-		this.filterSustainLevel=0.5*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0.0005;
-		this.amplitudeDecay=20;
-		this.amplitudeSustainLevel=0.1;
-		this.amplitudeSustain = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trHommageABadings: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 2;
-
-		this.osc1.osc.type = "triangle";
-		this.osc2.osc.type = "triangle";
-		this.osc3.osc.type = "triangle";
-
-		this.osc2.osc.detune.value = 300;
-		this.osc3.osc.detune.value = -300;
-
-		this.gain1.gain.gain.value = 0.8;
-		this.gain2.gain.gain.value = 0.8;
-		this.gain3.gain.gain.value = 0.8;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=40;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.4;
-		this.filterDecay=0.7;
-		this.filterSustainLevel=1*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.4;
-		this.amplitudeDecay=0.7;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trRingModulatorEffects: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 0.25;
-
-		this.osc1.osc.type = "square";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "square";
-
-		this.gain1.gain.gain.value = 0.8;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=40;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.2;
-		this.filterDecay=0.7;
-		this.filterSustainLevel=0.5*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.2;
-		this.amplitudeDecay=0.7;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trJetPlane: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 1;
-
-		this.filterAttackTarget=40;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=10;
-		this.filterDecay=10;
-		this.filterSustainLevel=1*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=5;
-		this.amplitudeDecay=10;
-		this.amplitudeSustainLevel=1;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trExplodingBomb: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "triangle";
-		this.osc2.osc.type = "triangle";
-		this.osc3.osc.type = "sine";
-
-		this.osc2.osc.detune.value = -100;
-
-		this.gain1.gain.gain.value = 0.4;
-		this.gain2.gain.gain.value = 0.4;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0.8;
-
-		this.filterAttackTarget=40;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0;
-		this.filterDecay=0.001;
-		this.filterSustainLevel=1*this.filterAttackTarget;
-		this.filterSustain = 0;
-
-		this.amplitudeAttack=0;
-		this.amplitudeDecay=0.005;
-		this.amplitudeSustainLevel=0.5;
-		this.amplitudeSustain = 0.5;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trClarinet: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "square";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.gain1.gain.gain.value = 0.5;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0.03;
-
-		this.filterAttackTarget=1040.24;
-		this.filter.biquad.Q.value = 5;
-		this.filterAttack=0.2;
-		this.filterDecay=0.4;
-		this.filterSustainLevel=0.8*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.2;
-		this.amplitudeDecay=0.3;
-		this.amplitudeSustainLevel=0.8;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trTrumpet: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sawtooth";
-		this.osc3.osc.type = "sawtooth";
-
-		this.gain1.gain.gain.value = 0.5;
-		this.gain2.gain.gain.value = 0.7;
-		this.gain3.gain.gain.value = 0.9;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.filterAttackTarget=151.96;
-		this.filter.biquad.Q.value = 0;
-		this.filterAttack=0.4;
-		this.filterDecay=0.4;
-		this.filterSustainLevel=1*this.filterAttackTarget;
-		this.filterSustain = 1;
-
-		this.amplitudeAttack=0.2;
-		this.amplitudeDecay=0.4;
-		this.amplitudeSustainLevel=1;
-		this.amplitudeSustain = 1;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trXylophone: function(){
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.osc1.osc.type = "triangle";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.amplitudeAttack=0.005;
-		this.amplitudeDecay=0.6;
-		this.amplitudeSustain = 0;
-		this.amplitudeSustainLevel=0;
-
-		this.filterAttack=0.005;
-		this.filterAttackTarget=80;
-		this.filterDecay=0.2;
-		this.filterSustain = 0;
-		this.filterSustainLevel=0;
-
-		this.filter.biquad.Q.value = 4;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trTempleBlocks: function(){
-
-		// nice percussion - cool mellow knock around 108 Hz
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.osc1.osc.type = "triangle";
-		this.osc2.osc.type = "triangle";
-		this.osc3.osc.type = "sine";
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 1;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.amplitudeAttack=0.005;
-		this.amplitudeDecay=0.010;
-		this.amplitudeSustain = 0;
-		this.amplitudeSustainLevel=0;
-
-		this.filterAttack=0;
-		this.filterAttackTarget=1901.85;
-		this.filterDecay=0;
-		this.filterSustain = 0.015;
-		this.filterSustainLevel=1901.85;
-
-		this.filter.biquad.Q.value = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	trHorn: function(){
-
-		// pretty nice in the sub range
-
-		this.osc1.start();
-		this.osc2.start();
-		this.osc3.start();
-		this.noise.start();
-
-		this.osc1.osc.type = "sawtooth";
-		this.osc2.osc.type = "sine";
-		this.osc3.osc.type = "sine";
-
-		this.octave1 = 1;
-		this.octave2 = 1;
-		this.octave3 = 1;
-
-		this.gain1.gain.gain.value = 1;
-		this.gain2.gain.gain.value = 0;
-		this.gain3.gain.gain.value = 0;
-		this.noiseGain.gain.gain.value = 0;
-
-		this.amplitudeAttack=0.01;
-		this.amplitudeDecay=0.3;
-		this.amplitudeSustain = 2;
-		this.amplitudeSustainLevel=0.9;
-
-		this.filterAttack=0.37;
-		this.filterAttackTarget=271.1;
-		this.filterDecay=0.3;
-		this.filterSustain = 2;
-		this.filterSustainLevel=271.1*0.8;
-
-		this.filter.biquad.Q.value = 0;
-
-		this.amplitudeEnvelope = new Envelope([
-			1, this.amplitudeAttack,
-			this.amplitudeSustainLevel, this.amplitudeDecay,
-			this.amplitudeSustainLevel, this.amplitudeSustain,
-			0, this.amplitudeDecay,
-		]);
-
-		this.filterEnvelope = new Envelope([
-			this.filterAttackTarget, this.filterAttack,
-			this.filterSustainLevel, this.filterDecay,
-			this.filterSustainLevel, this.filterSustain,
-			0, this.filterDecay,
-		]);
-
-	},
-
-	connect: function(audioNode){
-		if (audioNode.hasOwnProperty('input') == 1){
-			this.output.connect(audioNode.input);
-		}
-		else {
-			this.output.connect(audioNode);
-		}
-	},
-
-}
 
 //--------------------------------------------------------------
 
+// bandpass-filtered noise
 function NoiseTone(freq, Q){
 
 	this.freq = freq;
@@ -5018,14 +3909,17 @@ NoiseTone.prototype = {
 	noise: this.noise,
 	filter: this.filter,
 
+	// start noise buffer (on loop) immediately
 	start: function(){
 		this.noise.start();
 	},
 
+	// stop noise buffer immediately
 	stop: function(){
 		this.noise.stop();
 	},
 
+	// start noise buffer (on loop) at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -5034,6 +3928,7 @@ NoiseTone.prototype = {
 
 	},
 
+	// stop noise buffer (on loop) at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -5042,6 +3937,7 @@ NoiseTone.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -5050,10 +3946,12 @@ NoiseTone.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// basic oscillator-envelope combination
 function Operator(){
 
 	this.output = audioCtx.createGain();
@@ -5078,7 +3976,8 @@ Operator.prototype = {
 	eG: this.eG,
 	gain: this.gain,
 
-	setOp(type, freq, gainVal, eArray){
+	// set operator parameters and initialize nodes
+	setOp: function(type, freq, gainVal, eArray){
 
 		this.type = type;
 		this.freq = freq;
@@ -5097,32 +3996,39 @@ Operator.prototype = {
 
 	},
 
-	setFrequency(freq){
+	// set the frequency of the operator's oscillator
+	setFrequency: function(freq){
 		this.osc.osc.frequency.value = freq;
 	},
 
-	setGain(gainVal){
+	// set the output gain of the operator
+	setGain: function(gainVal){
 		this.gain.gain.gain.value = gainVal;
 	},
 
-	setType(type){
+	// set the type of the operator's oscillator
+	setType: function(type){
 		this.osc.osc.type = type;
 	},
 
-	setEnvelope(eArray){
+	// set the operator's envelope
+	setEnvelope: function(eArray){
 		this.envelope.output.disconnect();
 		this.envelope = new Envelope(eArray);
 		this.envelope.connect(this.eG.gain.gain);
 	},
 
+	// start the operator's envelope immediately
 	start: function(){
 		this.envelope.start();
 	},
 
+	// stop the operator's envelope immediately
 	stop: function(){
 		this.envelope.stop();
 	},
 
+	// start the opeartor's envelope at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -5131,6 +4037,7 @@ Operator.prototype = {
 
 	},
 
+	// stop the operator's envelope at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -5139,6 +4046,7 @@ Operator.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -5152,6 +4060,7 @@ Operator.prototype = {
 
 //--------------------------------------------------------------
 
+// PlaceFormants() with formants' amplitude modulated by BreakPoints
 function PlaceBreakPointFormants(){
 
 	this.output = audioCtx.createGain();
@@ -5204,6 +4113,7 @@ PlaceBreakPointFormants.prototype = {
 
 	nFormants: this.nFormants,
 
+	// create a formant via amplitude modulation
 	amForm: function(cFreq, mFreq, mIdx, mEArray, mExpArray, mBPRate, aEArray, aExpArray, aBPRate, gainVal){
 
 		this.cFreq = cFreq;
@@ -5244,6 +4154,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// create a formant via frequency modulation
 	fmForm: function(cFreq, mFreq, mIdx, mEArray, mExpArray, mBPRate, aEArray, aExpArray, aBPRate, gainVal){
 
 		this.cFreq = cFreq;
@@ -5281,6 +4192,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// create a formant of filtered noise
 	noiseForm: function(freq, Q, eArray, expArray, bPRate, gainVal){
 
 		this.freq = freq;
@@ -5305,6 +4217,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// create a formant with a waveshaped sine wave
 	shaperForm: function(freq, sGainVal, sEArray, sExpArray, sBPRate, aEArray, aExpArray, aBPRate, gainVal){
 
 		this.freq = freq;
@@ -5339,6 +4252,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// start all oscillators immediately
 	start: function(){
 
 		for(var i=0; i<this.fCOA.length; i++){
@@ -5353,6 +4267,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// play all formant envelopes immediately
 	playAll: function(){
 
 		for(var i=0; i<this.eA.length; i++){
@@ -5367,6 +4282,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// play all formant envelopes at specified time (in seconds)
 	playAllAtTime: function(time){
 
 		this.time = time;
@@ -5383,6 +4299,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// play individual formant envelope at specified time
 	play: function(idx){
 
 			this.idx = idx;
@@ -5408,6 +4325,8 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// set the frequency of an individual formant's carrier oscillator
+	// at a specified time (in seconds)
 	setCFreqAtTime: function(idx, freq, time){
 
 		this.idx = idx;
@@ -5424,6 +4343,8 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// set the frequency of an individual formant's modulating oscillator
+	// at a specified time (in seconds)
 	setMFreqAtTime: function(idx, freq, time){
 
 		this.idx = idx;
@@ -5434,6 +4355,8 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// set Q value of an individual noise formant at a specified
+	// time (in seconds)
 	setQAtTime: function(idx, Q, time){
 
 		this.idx = idx;
@@ -5444,6 +4367,7 @@ PlaceBreakPointFormants.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -5457,6 +4381,7 @@ PlaceBreakPointFormants.prototype = {
 
 //--------------------------------------------------------------
 
+// design multiple individual formants via methods
 function PlaceFormants(){
 
 	this.output = audioCtx.createGain();
@@ -5509,6 +4434,7 @@ PlaceFormants.prototype = {
 
 	nFormants: this.nFormants,
 
+	// create a formant via amplitude modulation
 	amForm: function(cFreq, mFreq, mIdx, mEArray, aEArray, gainVal){
 
 		this.cFreq = cFreq;
@@ -5543,6 +4469,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// create a formant via frequency modulation
 	fmForm: function(cFreq, mFreq, mIdx, mEArray, aEArray, gainVal){
 
 		this.cFreq = cFreq;
@@ -5574,6 +4501,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// create a formant of filtered noise
 	noiseForm: function(freq, Q, eArray, gainVal){
 
 		this.freq = freq;
@@ -5595,6 +4523,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// create a formant with a waveshaped sine wave
 	shaperForm: function(freq, sGainVal, sEArray, aEArray, gainVal){
 
 		this.freq = freq;
@@ -5623,6 +4552,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// start all oscillators immediately
 	start: function(){
 
 		for(var i=0; i<this.fCOA.length; i++){
@@ -5637,6 +4567,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// play all formant envelopes immediately
 	playAll: function(){
 
 		for(var i=0; i<this.eA.length; i++){
@@ -5651,6 +4582,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// play all formant envelopes at specified time (in seconds)
 	playAllAtTime: function(time){
 
 		this.time = time;
@@ -5667,6 +4599,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// play individual formant envelope immediately
 	play: function(idx){
 
 			this.idx = idx;
@@ -5679,6 +4612,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// play individual formant envelope at specified time
 	playAtTime: function(idx, time){
 
 			this.idx = idx;
@@ -5692,6 +4626,8 @@ PlaceFormants.prototype = {
 
 	},
 
+	// set the frequency of an individual formant's carrier oscillator
+	// at a specified time (in seconds)
 	setCFreqAtTime: function(idx, freq, time){
 
 		this.idx = idx;
@@ -5708,6 +4644,8 @@ PlaceFormants.prototype = {
 
 	},
 
+	// set the frequency of an individual formant's modulating oscillator
+	// at a specified time (in seconds)
 	setMFreqAtTime: function(idx, freq, time){
 
 		this.idx = idx;
@@ -5718,6 +4656,8 @@ PlaceFormants.prototype = {
 
 	},
 
+	// set Q value of an individual noise formant at a specified
+	// time (in seconds)
 	setQAtTime: function(idx, Q, time){
 
 		this.idx = idx;
@@ -5728,6 +4668,7 @@ PlaceFormants.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -5741,6 +4682,7 @@ PlaceFormants.prototype = {
 
 //--------------------------------------------------------------
 
+// PlaceFormants() with formants' amplitude modulated by LFOs
 function PlaceLFOFormants(){
 
 	this.output = audioCtx.createGain();
@@ -5793,6 +4735,7 @@ PlaceLFOFormants.prototype = {
 
 	nFormants: this.nFormants,
 
+	// create a formant via amplitude modulation
 	amForm: function(cFreq, mFreq, mIdx, mlRate, lRate, gainVal){
 
 		this.cFreq = cFreq;
@@ -5827,6 +4770,7 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// create a formant via frequency modulation
 	fmForm: function(cFreq, mFreq, mIdx, mlRate, lRate, gainVal){
 
 		this.cFreq = cFreq;
@@ -5858,6 +4802,7 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// create a formant of filtered noise
 	noiseForm: function(freq, Q, lRate, gainVal){
 
 		this.freq = freq;
@@ -5879,6 +4824,7 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// create a formant with a waveshaped sine wave
 	shaperForm: function(freq, sGainVal, mlRate, lRate, gainVal){
 
 		this.freq = freq;
@@ -5907,6 +4853,7 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// start all oscillators immediately
 	start: function(){
 
 		for(var i=0; i<this.fCOA.length; i++){
@@ -5931,6 +4878,7 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// start all oscillators at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -5957,6 +4905,8 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// set the frequency of an individual formant's carrier oscillator
+	// at a specified time (in seconds)
 	setCFreqAtTime: function(idx, freq, time){
 
 		this.idx = idx;
@@ -5973,6 +4923,8 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// set the frequency of an individual formant's modulating oscillator
+	// at a specified time (in seconds)
 	setMFreqAtTime: function(idx, freq, time){
 
 		this.idx = idx;
@@ -5983,6 +4935,8 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// set Q value of an individual noise formant at a specified
+	// time (in seconds)
 	setQAtTime: function(idx, Q, time){
 
 		this.idx = idx;
@@ -5993,6 +4947,8 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// set the rate of an individual formant's output LFO() at a
+	// specified time (in seconds)
 	setLRateAtTime: function(idx, rate, time){
 
 		this.idx = idx;
@@ -6003,6 +4959,8 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// set the rate of an individual formant's modulator LFO() at a
+	// specified time (in seconds)
 	setMLRateAtTime: function(idx, rate, time){
 
 		this.idx = idx;
@@ -6013,6 +4971,7 @@ PlaceLFOFormants.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -6026,12 +4985,13 @@ PlaceLFOFormants.prototype = {
 
 //--------------------------------------------------------------
 
-function SawSines(nNodes, freqArray, rateArray){
-
-	this.freqArray = freqArray;
-	this.rateArray = rateArray;
+// amplitude modulate a group of sine waves with a group of sawtooth LFOs
+function SawSines(nNodes, freqArray, rateArray, sawtoothExp){
 
 	this.nNodes = nNodes;
+	this.freqArray = freqArray;
+	this.rateArray = rateArray;
+	this.sawtoothExp = sawtoothExp;
 
 	this.osc = {};
 	this.saw = {};
@@ -6043,7 +5003,7 @@ function SawSines(nNodes, freqArray, rateArray){
 		this.osc[i] = {osc: new MyOsc("sine", this.freqArray[i])};
 
 		this.saw[i] = {saw: new MyBuffer(1, 1, audioCtx.sampleRate)};
-		this.saw[i].saw.makeTriangle();
+		this.saw[i].saw.makeInverseSawtooth(this.sawtoothExp);
 		this.saw[i].saw.loop = true;
 		this.saw[i].saw.playbackRate = this.rateArray[i];
 
@@ -6067,6 +5027,7 @@ SawSines.prototype = {
 	amFilter: this.amFilter,
 	amGain: this.amGain,
 
+	// set frequency of individual oscillator immediately
 	setFreq: function(freq, idx){
 
 		var freq = freq;
@@ -6076,6 +5037,7 @@ SawSines.prototype = {
 
 	},
 
+	// set frequencies of all oscillators immediately
 	setFreqs: function(freqArray){
 
 		var freqArray = freqArray;
@@ -6086,6 +5048,7 @@ SawSines.prototype = {
 
 	},
 
+	// set frequencies of all oscillators at specified time (in seconds)
 	setFreqsAtTime: function(freqArray, time){
 
 		this.freqArray = freqArray;
@@ -6097,6 +5060,7 @@ SawSines.prototype = {
 
 	},
 
+	// start all oscillators immediately
 	start: function(){
 
 		for(var i=0; i<this.nNodes; i++){
@@ -6106,6 +5070,7 @@ SawSines.prototype = {
 
 	},
 
+	// stop all oscillators immediately
 	stop: function(){
 
 		for(var i=0; i<this.nNodes; i++){
@@ -6115,6 +5080,7 @@ SawSines.prototype = {
 
 	},
 
+	// start all oscillators at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -6126,6 +5092,7 @@ SawSines.prototype = {
 
 	},
 
+	// stop all oscillators at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -6137,6 +5104,7 @@ SawSines.prototype = {
 
 	},
 
+	// connect the output of a specified node to the input of another
 	connectOutput: function(audioNode, idx){
 
 		var idx = idx;
@@ -6150,6 +5118,7 @@ SawSines.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -6163,6 +5132,7 @@ SawSines.prototype = {
 
 //--------------------------------------------------------------
 
+// Operator() connected to a waveshaper
 function ShaperSynth(){
 
 	this.output = audioCtx.createGain();
@@ -6183,6 +5153,38 @@ ShaperSynth.prototype = {
 	op: this.op,
 	waveShaper: this.waveShaper,
 
+	// start the opeartor's envelope at specified time (in seconds)
+	startAtTime: function(time, frequency){
+
+		this.time = time;
+		this.frequency = frequency;
+
+		this.op.osc.osc.frequency.setValueAtTime(this.frequency, this.time);
+		this.op.startAtTime(this.time);
+
+
+	},
+
+	// stop the opeartor's envelope at specified time (in seconds)
+	stopAtTime: function(time){
+
+		this.time = time;
+
+		this.op.stopAtTime(this.time);
+
+	},
+
+	// connect the output node of this object to the input of another
+	connect: function(audioNode){
+		if (audioNode.hasOwnProperty('input') == 1){
+			this.output.connect(audioNode.input);
+		}
+		else {
+			this.output.connect(audioNode);
+		}
+	},
+
+	// preset 1
 	prBassSynth: function(){
 
 		var type = "sine";
@@ -6198,6 +5200,7 @@ ShaperSynth.prototype = {
 
 	},
 
+	// preset 2
 	preset2: function(fund){
 
 		var type = "sine";
@@ -6213,6 +5216,7 @@ ShaperSynth.prototype = {
 
 	},
 
+	// preset 3
 	amShape: function(type, fund, gain, envelope, cFreq, mFreq, mGain){
 
 		var type = type;
@@ -6228,6 +5232,7 @@ ShaperSynth.prototype = {
 
 	},
 
+	// preset 4
 	fmShape: function(type, fund, gain, envelope, cFreq, mFreq, mGain){
 
 		var type = type;
@@ -6243,42 +5248,17 @@ ShaperSynth.prototype = {
 
 	},
 
-	startAtTime: function(time, frequency){
-
-		this.time = time;
-		this.frequency = frequency;
-
-		this.op.osc.osc.frequency.setValueAtTime(this.frequency, this.time);
-		this.op.startAtTime(this.time);
-
-
-	},
-
-	stopAtTime: function(time){
-
-		this.time = time;
-
-		this.op.stopAtTime(this.time);
-
-	},
-
-	connect: function(audioNode){
-		if (audioNode.hasOwnProperty('input') == 1){
-			this.output.connect(audioNode.input);
-		}
-		else {
-			this.output.connect(audioNode);
-		}
-	},
-
 }
 
 //--------------------------------------------------------------
 
-// MULTI OBJECTS
+// MULTI OBJECTS (11)
+// - objects which provide an interface for quickly loading
+//   multiple objects of the same type
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple buffer objects
 function MultiBuffer(nChannels, length, sRate){
 
 	this.output = audioCtx.createGain();
@@ -6299,6 +5279,7 @@ MultiBuffer.prototype = {
 	playbackRate: this.playbackRate,
 	loop: this.loop,
 
+	// start all buffers immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer;
@@ -6308,10 +5289,12 @@ MultiBuffer.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop all buffers immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// start all buffers at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -6325,6 +5308,7 @@ MultiBuffer.prototype = {
 
 	},
 
+	// stop all buffers at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -6333,6 +5317,7 @@ MultiBuffer.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -6342,6 +5327,7 @@ MultiBuffer.prototype = {
 		}
 	},
 
+	// fill specified buffer with a sine wave
 	makeSine: function(channel){
 
 		this.twoPi = Math.PI*2;
@@ -6364,6 +5350,7 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with a unipolar sine wave
 	makeUnipolarSine: function(){
 
 		this.twoPi = Math.PI*2;
@@ -6386,7 +5373,7 @@ MultiBuffer.prototype = {
 
 	},
 
-
+	// fill specified buffer with the sum of multiple sine waves
 	additiveSynth: function(overtoneArray, amplitudeArray, channel){
 
 		this.overtoneArray = overtoneArray;
@@ -6419,6 +5406,7 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with a sawtooth wave
 	makeSawtooth: function(exp, channel){
 
 		this.exp = exp;
@@ -6432,6 +5420,7 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with an inverse sawtooth wave
 	makeInverseSawtooth: function(exp, channel){
 
 		this.exp = exp;
@@ -6445,6 +5434,7 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with random values
 	makeNoise: function(channel){
 
 		this.channel = channel;
@@ -6455,6 +5445,7 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with a single value
 	makeConstant: function(value, channel){
 
 		this.value = value;
@@ -6468,6 +5459,7 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with a square wave
 	makeSquare: function(dutyCycle, channel){
 
 		this.channel = channel;
@@ -6487,6 +5479,8 @@ MultiBuffer.prototype = {
 			}
 	},
 
+	// fill specified buffer with a square wave with custom
+	// start and end points
 	floatingCycleSquare: function(cycleStart, cycleEnd, channel){
 
 		this.channel = channel;
@@ -6507,6 +5501,8 @@ MultiBuffer.prototype = {
 		}
 	},
 
+	// fill specified buffer with a random arrangment of a series of values,
+	// with the number of values specified by "quant"
 	quantizedArrayBuffer: function(quant, valueArray, channel){
 
 		this.quant = quant;
@@ -6536,10 +5532,12 @@ MultiBuffer.prototype = {
 
 			}
  	},
+
 }
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple delay objects
 function MultiDelay(delayArray){
 
 	this.input = audioCtx.createGain();
@@ -6562,6 +5560,7 @@ MultiDelay.prototype = {
 	delays: this.delays,
 	delayArray: this.delayArray,
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.delays[outputIdx].delay.connect(audioNode.input);
@@ -6571,6 +5570,7 @@ MultiDelay.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.delayArray.length; i++){
@@ -6588,6 +5588,7 @@ MultiDelay.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple Effect objects
 function MultiEffect(nEffects){
 
 	this.input = audioCtx.createGain();
@@ -6612,18 +5613,21 @@ MultiEffect.prototype = {
 	effects: this.effects,
 	nEffects: this.nEffects,
 
+	// start all effects immediately
 	start: function(){
 		for(var i=0; i<this.nInstruments; i++){
 			this.effects[i].effect.start();
 		}
 	},
 
+	// stop all effects immediately
 	stop: function(){
 		for(var i=0; i<this.nInstruments; i++){
 			this.effects[i].effect.stop();
 		}
 	},
 
+	// start all effects at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -6634,6 +5638,7 @@ MultiEffect.prototype = {
 
 	},
 
+	// stop all effects at specified time (in seconds)
 	stopAtTime: function(){
 
 		this.time = time;
@@ -6644,6 +5649,7 @@ MultiEffect.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -6653,6 +5659,7 @@ MultiEffect.prototype = {
 		}
 	},
 
+	// connect the output node of an individual object to the input of another
 	connect: function(idx, audioNode){
 
 		this.idx = idx;
@@ -6669,6 +5676,7 @@ MultiEffect.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple Envelope objects
 function MultiEnvelope(envelopeArray){
 
 	this.envelopeArray = envelopeArray;
@@ -6686,23 +5694,27 @@ MultiEnvelope.prototype = {
 	envelopes: this.envelopes,
 	envelopeArray: this.envelopeArray,
 
-	start: function(eIndex){
-		this.envelopes[eIndex].envelope.start();
+	// start specified envelope immediately
+	start: function(idx){
+		this.envelopes[idx].envelope.start();
 	},
 
-	stop: function(eIndex){
-		this.envelopes[eIndex].envelope.stop();
+	// stop specified envelope immediately
+	stop: function(idx){
+		this.envelopes[idx].envelope.stop();
 	},
 
-	startAtTime: function(eIndex, time){
+	// start specified envelope at specified time (in seconds)
+	startAtTime: function(idx, time){
 
-		this.eIndex = eIndex;
+		this.idx = idx;
 		this.time = time;
 
 		this.envelopes[this.eIndex].envelope.startAtTime(this.time);
 
 	},
 
+	// stop specified envelope at specified time (in seconds)
 	stopAtTime: function(eIndex, time){
 
 		this.eIndex = eIndex;
@@ -6712,18 +5724,21 @@ MultiEnvelope.prototype = {
 
 	},
 
+	// start all envelopes immediately
 	startAll: function(){
 		for(var i=0; i<this.envelopeArray.length; i++){
 			this.envelopes[i].envelope.start();
 		}
 	},
 
+	// stop all envelopes immediately
 	stopAll: function(){
 		for(var i=0; i<this.envelopeArray.length; i++){
 			this.envelopes[i].envelope.stop();
 		}
 	},
 
+	// start all envelopes at specified time (in seconds)
 	startAllAtTime: function(time){
 
 		this.time = time;
@@ -6734,6 +5749,7 @@ MultiEnvelope.prototype = {
 
 	},
 
+	// stop all envelopes at specified time (in seconds)
 	stopAllAtTime: function(time){
 
 		this.time = time;
@@ -6744,6 +5760,7 @@ MultiEnvelope.prototype = {
 
 	},
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.envelopes[outputIdx].envelope.connect(audioNode.input);
@@ -6753,6 +5770,7 @@ MultiEnvelope.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.envelopeArray.length; i++){
@@ -6770,6 +5788,7 @@ MultiEnvelope.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple Gain objects
 function MultiGain(gainArray){
 
 	this.input = audioCtx.createGain();
@@ -6791,6 +5810,7 @@ MultiGain.prototype = {
 	gains: this.gains,
 	gainArray: this.gainArray,
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.gains[outputIdx].gain.connect(audioNode.input);
@@ -6800,6 +5820,7 @@ MultiGain.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.gainArray.length; i++){
@@ -6817,6 +5838,7 @@ MultiGain.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple Instrument objects
 function MultiInstrument(nInstruments){
 
 	this.output = audioCtx.createGain();
@@ -6838,6 +5860,7 @@ MultiInstrument.prototype = {
 	instruments: this.instruments,
 	nInstruments: this.nInstruments,
 
+	// start specified instrument immediately
 	start: function(idx){
 
 		this.idx = idx;
@@ -6846,6 +5869,7 @@ MultiInstrument.prototype = {
 
 	},
 
+	// stop specified instrument immediately
 	stop: function(idx){
 
 		this.idx = idx;
@@ -6854,6 +5878,7 @@ MultiInstrument.prototype = {
 
 	},
 
+	// start specified instrument at specified time (in seconds)
 	startAtTime: function(idx, time){
 
 		this.idx = idx;
@@ -6863,6 +5888,7 @@ MultiInstrument.prototype = {
 
 	},
 
+	// stop specijfied instrument at specified time (in seconds)
 	stopAtTime: function(idx, time){
 
 		this.idx = idx;
@@ -6872,18 +5898,21 @@ MultiInstrument.prototype = {
 
 	},
 
+	// start all instruments immediately
 	startAll: function(){
 		for(var i=0; i<this.nInstruments; i++){
 			this.instruments[i].instrument.start();
 		}
 	},
 
+	// stop all instruments immediately
 	stopAll: function(){
 		for(var i=0; i<this.nInstruments; i++){
 			this.instruments[i].instrument.stop();
 		}
 	},
 
+	// start all instruments at specified time
 	startAllAtTime: function(time){
 
 		this.time = time;
@@ -6894,6 +5923,7 @@ MultiInstrument.prototype = {
 
 	},
 
+	// stop all instruments at specified time
 	stopAllAtTime: function(time){
 
 		this.time = time;
@@ -6904,6 +5934,7 @@ MultiInstrument.prototype = {
 
 	},
 
+	// connect the output node of an individual object to the input of another
 	connect: function(idx, audioNode){
 
 		this.idx = idx;
@@ -6916,6 +5947,7 @@ MultiInstrument.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -6929,6 +5961,7 @@ MultiInstrument.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple Operator objects
 function MultiOperator(nOps){
 
 	this.nOps = nOps;
@@ -6946,14 +5979,17 @@ MultiOperator.prototype = {
 	ops: this.ops,
 	nOps: this.nOps,
 
+	// start specified operator immediately
 	start: function(oIdx){
 		this.ops[oIdx].op.start();
 	},
 
+	// stop specified operator immediately
 	stop: function(oIdx){
 		this.ops[oIdx].op.stop();
 	},
 
+	// start specified operator at specified time (in seconds)
 	startAtTime: function(oIndex, time){
 
 		this.oIndex = oIndex;
@@ -6963,6 +5999,7 @@ MultiOperator.prototype = {
 
 	},
 
+	// stop specified operator at specified time (in seconds)
 	stopAtTime: function(oIndex, time){
 
 		this.oIndex = oIndex;
@@ -6972,18 +6009,21 @@ MultiOperator.prototype = {
 
 	},
 
+	// start all operators immediately
 	startAll: function(){
 		for(var i=0; i<this.nOps; i++){
 			this.ops[i].op.start();
 		}
 	},
 
+	// stop all operators immediately
 	stopAll: function(){
 		for(var i=0; i<this.nOps; i++){
 			this.ops[i].op.stop();
 		}
 	},
 
+	// start all operators at specified time (in seconds)
 	startAllAtTime: function(time){
 
 		this.time = time;
@@ -6993,6 +6033,7 @@ MultiOperator.prototype = {
 		}
 	},
 
+	// stop all operators at specified time (in seconds)
 	stopAllAtTime: function(time){
 
 		this.time = time;
@@ -7003,6 +6044,7 @@ MultiOperator.prototype = {
 
 	},
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.ops[outputIdx].op.connect(audioNode.input);
@@ -7012,6 +6054,7 @@ MultiOperator.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.nOps; i++){
@@ -7030,6 +6073,7 @@ MultiOperator.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple oscillator objects
 function MultiOsc(typeArray, freqArray){
 
 	this.typeArray = typeArray;
@@ -7049,14 +6093,17 @@ MultiOsc.prototype = {
 	typeArray: this.typeArray,
 	freqArray: this.freqArray,
 
+	// start specified oscillator immediately
 	start: function(oIdx){
 		this.oscs[oIdx].osc.start();
 	},
 
+	// stop specified oscillator immediately
 	stop: function(oIdx){
 		this.oscs[oIdx].osc.stop();
 	},
 
+	// start specified oscillator at specified time (in seconds)
 	startAtTime: function(oIdx, time){
 
 		this.oIdx = oIdx;
@@ -7066,6 +6113,7 @@ MultiOsc.prototype = {
 
 	},
 
+	// stop specified oscillator at specified time (in seconds)
 	stopAtTime: function(oIdx, time){
 
 		this.oIdx = oIdx;
@@ -7076,18 +6124,21 @@ MultiOsc.prototype = {
 
 	},
 
+	// start all oscillators immediately
 	startAll: function(){
 		for(var i=0; i<this.typeArray.length; i++){
 			this.oscs[i].osc.start();
 		}
 	},
 
+	// stop all oscillators immediately
 	stopAll: function(){
 		for(var i=0; i<this.typeArray.length; i++){
 			this.oscs[i].osc.stop();
 		}
 	},
 
+	// start all oscillators at specified time (in seconds)
 	startAllAtTime: function(time){
 
 		this.time = time;
@@ -7098,6 +6149,7 @@ MultiOsc.prototype = {
 
 	},
 
+	// stop all oscillators at specified time (in seconds)
 	stopAllAtTime: function(time){
 
 		this.time = time;
@@ -7108,6 +6160,7 @@ MultiOsc.prototype = {
 
 	},
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.oscs[outputIdx].osc.connect(audioNode.input);
@@ -7117,6 +6170,7 @@ MultiOsc.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.typeArray.length; i++){
@@ -7134,6 +6188,7 @@ MultiOsc.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple panner objects
 function MultiPan(panArray){
 
 	this.input = audioCtx.createGain();
@@ -7155,6 +6210,7 @@ MultiPan.prototype = {
 	pans: this.pans,
 	panArray: this.panArray,
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.pans[outputIdx].pan.connect(audioNode.input);
@@ -7164,6 +6220,7 @@ MultiPan.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.panArray.length; i++){
@@ -7181,6 +6238,7 @@ MultiPan.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading panned delay objects
 function MultiPannedDelay(delayArray, panArray){
 
 	this.input = audioCtx.createGain();
@@ -7211,6 +6269,7 @@ MultiPannedDelay.prototype = {
 	delayArray: this.delayArray,
 	panArray: this.panArray,
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.pans[outputIdx].pan.connect(audioNode.input);
@@ -7220,6 +6279,7 @@ MultiPannedDelay.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			for(var i=0; i<this.panArray.length; i++){
@@ -7237,6 +6297,7 @@ MultiPannedDelay.prototype = {
 
 //--------------------------------------------------------------
 
+// interface for quickly loading multiple stereo delay objects
 function MultiStereoDelay(delayLArray, delayRArray, fbArray){
 
 	this.input = audioCtx.createGain();
@@ -7268,6 +6329,7 @@ MultiStereoDelay.prototype = {
 	fbArray: this.fbArray,
 	nDelays: this.nDelays,
 
+	// connect the output node of an individual object to the input of another
 	connect: function(audioNode, outputIdx){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.delays[outputIdx].delay.connect(audioNode.input);
@@ -7277,6 +6339,7 @@ MultiStereoDelay.prototype = {
 		}
 	},
 
+	// connect the output node of this object to the input of another
 	connectAll: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 				this.output.connect(audioNode.input);
@@ -7290,10 +6353,12 @@ MultiStereoDelay.prototype = {
 
 //--------------------------------------------------------------
 
-// MY NODES
+// MY NODES (12)
+// - simple adaptations of Web Audio API Nodes
 
 //--------------------------------------------------------------
 
+// adaption of the Web Audio API BiquadFilterNode
 function MyBiquad(type, frequency, Q){
 
 	this.type = type;
@@ -7319,6 +6384,7 @@ MyBiquad.prototype = {
 	output: this.output,
 	biquad: this.biquad,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -7332,6 +6398,7 @@ MyBiquad.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API AudioBuffer node
 function MyBuffer(nChannels, length, sRate){
 
 	this.output = audioCtx.createGain();
@@ -7355,6 +6422,7 @@ MyBuffer.prototype = {
 
 	playbackRateInlet: this.playbackRateInlet,
 
+	// output buffer contents immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.loop = this.loop;
@@ -7365,10 +6433,12 @@ MyBuffer.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop outputting buffer contents immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// output buffer contents at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -7383,6 +6453,7 @@ MyBuffer.prototype = {
 
 	},
 
+	// stop outputting buffer contents at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -7391,6 +6462,7 @@ MyBuffer.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -7400,6 +6472,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a sine wave
 	makeSine: function(){
 
 		this.twoPi = Math.PI*2;
@@ -7421,6 +6494,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a unipolar sine wave
 	makeUnipolarSine: function(){
 
 		this.twoPi = Math.PI*2;
@@ -7442,6 +6516,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with the sum of multiple sine waves
 	additiveSynth: function(overtoneArray, amplitudeArray){
 
 		this.overtoneArray = overtoneArray;
@@ -7473,6 +6548,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a sawtooth wave
 	makeSawtooth: function(exp){
 
 		this.exp = exp;
@@ -7485,6 +6561,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with an inverse sawtooth wave
 	makeInverseSawtooth: function(exp){
 
 		this.exp = exp;
@@ -7497,6 +6574,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a triangle wave
 	makeTriangle: function(){
 
 		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
@@ -7515,6 +6593,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a custom triangle wave
 	makeRamp: function(peakPoint, upExp, downExp){
 
 		this.peakPoint = parseInt(this.buffer.length*peakPoint);
@@ -7536,6 +6615,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with random values
 	makeNoise: function(){
 
 		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
@@ -7546,6 +6626,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with random values between 0 and 1
 	makeUnipolarNoise: function(){
 
 		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
@@ -7556,6 +6637,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a single value
 	makeConstant: function(value){
 
 		this.value = value;
@@ -7568,6 +6650,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a square wave
 	makeSquare: function(dutyCycle){
 
 		this.dutyCycle = dutyCycle;
@@ -7587,6 +6670,8 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill buffer with a square wave with custom
+	// start and end points
 	floatingCycleSquare: function(cycleStart, cycleEnd){
 
 		this.cycleStart = cycleStart;
@@ -7606,6 +6691,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// fill a buffer a frequency-modulated sine wave
 	makeFm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -7634,6 +6720,7 @@ MyBuffer.prototype = {
 
 	},
 
+	// fill a buffer with an amplitude modulated sine wave
 	makeAm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -7662,6 +6749,8 @@ MyBuffer.prototype = {
 
 	},
 
+	// fill buffer with a random arrangment of a series of values,
+	// with the number of values specified by "quant"
 	quantizedArrayBuffer: function(quant, valueArray){
 
 		this.quant = quant;
@@ -7693,6 +6782,7 @@ MyBuffer.prototype = {
 		}
  	},
 
+	// multiply buffer values by a line with negative slope
 	applyDecay: function(exp){
 
 		this.exp = exp;
@@ -7707,6 +6797,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// multiply buffer values by a line with positive slope
 	applyRamp: function(peakPoint, upExp, downExp){
 
 		this.peakPoint = parseInt(this.buffer.length*peakPoint);
@@ -7728,6 +6819,8 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// add 1-(currentBufferValue) to all values in the buffer
+	// corresponding to the active portion of the square wave
 	applySquare: function(dutyCycle){
 
 		this.dutyCycle = dutyCycle;
@@ -7737,16 +6830,13 @@ MyBuffer.prototype = {
 			for (this.i=0; this.i<this.buffer.length; this.i++){
 
 				if(this.i<this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] *= 1;
-				}
-
-				else if(this.i>this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] *= 0;
+					this.nowBuffering[this.i] = this.nowBuffering[this.i]+(1-this.nowBuffering[this.i]);
 				}
 			}
 		}
 	},
 
+	// multiply buffer values by a sine of specified frequency
 	applySine: function(freq){
 
 		this.twoPi = Math.PI*2;
@@ -7769,6 +6859,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// multiply buffer values by a unipolar sine of specified frequency
 	applyUnipolarSine: function(freq){
 
 		this.twoPi = Math.PI*2;
@@ -7791,6 +6882,8 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// multiply buffer values by a random arrangment of a series of values,
+	// with the number of values specified by "quant"
 	applyQuantizedArrayBuffer: function(quant, valueArray){
 
 		this.quant = quant;
@@ -7822,6 +6915,7 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// multiply buffer values by random values within a specified range
 	applyNoise: function(amount){
 
 		this.a = amount;
@@ -7838,6 +6932,8 @@ MyBuffer.prototype = {
 		}
 	},
 
+	// add 1-(currentBufferValue) to all values in the buffer
+	// corresponding to the active portion of the square wave
 	applyFloatingCycleSquare: function(cycleStart, cycleEnd){
 
 		this.cycleStart = cycleStart;
@@ -7848,15 +6944,14 @@ MyBuffer.prototype = {
 			for (this.i=0; this.i<this.buffer.length; this.i++){
 
 				if(this.i>=this.buffer.length*this.cycleStart && this.i<=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] *= 1;
-				}
-				else if(this.i<=this.buffer.length*this.cycleStart || this.i>=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] *= 0;
+					this.nowBuffering[this.i] = this.nowBuffering[this.i]+(1-this.nowBuffering[this.i]);
 				}
 			}
 		}
+
 	},
 
+	// multiply buffer values by a frequency-modulated sine wave
 	applyFm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -7885,6 +6980,7 @@ MyBuffer.prototype = {
 
 	},
 
+	// multiply buffer values by an amplitude modulated sine wave
 	applyAm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -7917,6 +7013,7 @@ MyBuffer.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API DynamicsCompressorNode
 function MyCompressor(ratio, attack, release, threshold, makeUp){
 
 	this.input = audioCtx.createGain();
@@ -7949,6 +7046,7 @@ MyCompressor.prototype = {
 	compressor: this.compressor,
 	makeUpGain: this.makeUpGain,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -7957,10 +7055,12 @@ MyCompressor.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API ConvolverNode
 function MyConvolver(nChannels, length, sRate){
 
 	this.nChannels = nChannels;
@@ -7985,6 +7085,7 @@ MyConvolver.prototype = {
 	convolver: this.convolver,
 	buffer: this.buffer,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -7994,6 +7095,7 @@ MyConvolver.prototype = {
 		}
 	},
 
+	// fill buffer with a sine wave
 	makeSine: function(){
 
 		this.twoPi = Math.PI*2;
@@ -8018,6 +7120,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// fill buffer a frequency-modulated sine wave
 	makeFm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -8048,6 +7151,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// fill buffer with an amplitude modulated sine wave
 	makeAm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -8078,6 +7182,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// fill buffer with a unipolar sine wave
 	makeUnipolarSine: function(){
 
 		this.twoPi = Math.PI*2;
@@ -8102,6 +7207,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// fill buffer with a sigmoid function
  	makeSigmoid: function(amount){
 
  	this.k = amount;
@@ -8120,6 +7226,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
  	},
 
+	// fill buffer with a sawtooth wave
 	makeSawtooth: function(exp){
 
 		this.exp = exp;
@@ -8134,6 +7241,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// fill buffer with an inverse sawtooth wave
 	makeInverseSawtooth: function(exp){
 
 		this.exp = exp;
@@ -8149,6 +7257,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// fill buffer with random values
 	makeNoise: function(){
 
 		for (this.channel = 0; this.channel<this.buffer.numberOfChannels; this.channel++){
@@ -8161,6 +7270,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// fill buffer with a single value
 	makeConstant: function(value){
 
 		this.value = value;
@@ -8175,6 +7285,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// fill buffer with a square wave
 	makeSquare: function(dutyCycle){
 
 		this.dutyCycle = dutyCycle;
@@ -8197,6 +7308,8 @@ MyConvolver.prototype = {
 
 	},
 
+	// fill buffer with a square wave with custom
+	// start and end points
 	floatingCycleSquare: function(cycleStart, cycleEnd){
 
 		this.cycleStart = cycleStart;
@@ -8216,6 +7329,7 @@ MyConvolver.prototype = {
 		}
 	},
 
+	// fill buffer with a custom triangle wave
 	makeRamp: function(peakPoint, upExp, downExp){
 
 		this.peakPoint = parseInt(this.buffer.length*peakPoint);
@@ -8237,6 +7351,8 @@ MyConvolver.prototype = {
 		}
 	},
 
+	// fill buffer with a random arrangment of a series of values,
+	// with the number of values specified by "quant"
 	quantizedArrayBuffer: function(quant, valueArray){
 
 		this.quant = quant;
@@ -8270,6 +7386,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
  	},
 
+	// multiply buffer values by a line with negative slope
 	applyDecay: function(exp){
 
 		this.exp = exp;
@@ -8285,6 +7402,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// multiply buffer values by a line with positive slope
 	applyRamp: function(peakPoint, upExp, downExp){
 
 		this.peakPoint = parseInt(this.buffer.length*peakPoint);
@@ -8307,6 +7425,8 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// add 1-(currentBufferValue) to all values in the buffer
+	// corresponding to the active portion of the square wave
 	applySquare: function(dutyCycle){
 
 		this.dutyCycle = dutyCycle;
@@ -8316,11 +7436,7 @@ MyConvolver.prototype = {
 			for (this.i=0; this.i<this.buffer.length; this.i++){
 
 				if(this.i<this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] *= 1;
-				}
-
-				else if(this.i>this.buffer.length*this.dutyCycle){
-					this.nowBuffering[this.i] *= 0;
+					this.nowBuffering[this.i] = this.nowBuffering[this.i]+(1-this.nowBuffering[this.i]);
 				}
 			}
 		}
@@ -8329,6 +7445,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// multiply buffer values by a sine of specified frequency
 	applySine: function(freq){
 
 		this.twoPi = Math.PI*2;
@@ -8354,6 +7471,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// multiply buffer values by a unipolar sine of specified frequency
 	applyUnipolarSine: function(freq){
 
 		this.twoPi = Math.PI*2;
@@ -8379,6 +7497,8 @@ MyConvolver.prototype = {
 
 	},
 
+	// multiply buffer values by a random arrangment of a series of values,
+	// with the number of values specified by "quant"
 	applyQuantizedArrayBuffer: function(quant, valueArray){
 
 		this.quant = quant;
@@ -8412,6 +7532,7 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// multiply buffer values by random values within a specified range
 	applyNoise: function(amount){
 
 		this.a = amount;
@@ -8430,6 +7551,8 @@ MyConvolver.prototype = {
 		this.convolver.buffer = this.buffer;
 	},
 
+	// add 1-(currentBufferValue) to all values in the buffer
+	// corresponding to the active portion of the square wave
 	applyFloatingCycleSquare: function(cycleStart, cycleEnd){
 
 		this.cycleStart = cycleStart;
@@ -8440,15 +7563,16 @@ MyConvolver.prototype = {
 			for (this.i=0; this.i<this.buffer.length; this.i++){
 
 				if(this.i>=this.buffer.length*this.cycleStart && this.i<=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] = 1;
-				}
-				else if(this.i<=this.buffer.length*this.cycleStart || this.i>=this.buffer.length*this.cycleEnd){
-					this.nowBuffering[this.i] = 0;
+					this.nowBuffering[this.i] = this.nowBuffering[this.i]+(1-this.nowBuffering[this.i]);
 				}
 			}
 		}
+
+		this.convolver.buffer = this.buffer;
+
 	},
 
+	// multiply buffer values by a frequency-modulated sine wave
 	applyFm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -8479,6 +7603,7 @@ MyConvolver.prototype = {
 
 	},
 
+	// multiply buffer values by an amplitude modulated sine wave
 	applyAm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -8513,6 +7638,7 @@ MyConvolver.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API DelayNode
 function MyDelay(length, feedback){
 
 	this.input = audioCtx.createGain();
@@ -8540,14 +7666,17 @@ MyDelay.prototype = {
 	feedbackGain: this.feedbackGain,
 	delay: this.delay,
 
+	// set feedback level
 	setFeedback: function(feedback){
 		this.feedbackGain.gain.value = feedback;
 	},
 
+	// set length of delay (in seconds)
 	setDelayTime: function(delayTime){
 		this.delay.delayTime.value = delayTime;
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8561,6 +7690,7 @@ MyDelay.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API GainNode
 function MyGain(gain){
 
 	this.gainVal = gain;
@@ -8582,6 +7712,7 @@ MyGain.prototype = {
 	output: this.output,
 	gain: this.gain,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8595,6 +7726,7 @@ MyGain.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API OscillatorNode
 function MyOsc(type, frequency){
 
 	this.type = type;
@@ -8616,6 +7748,7 @@ MyOsc.prototype = {
 	frequencyInlet: this.frequencyInlet,
 	detune: this.detune,
 
+	// start oscillator immediately
 	start: function(){
 		this.osc = audioCtx.createOscillator();
 		this.osc.type = this.type;
@@ -8625,10 +7758,12 @@ MyOsc.prototype = {
 		this.osc.start();
 	},
 
+	// stop oscillator immediately
 	stop: function(){
 		this.osc.stop();
 	},
 
+	// start oscillator at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -8642,6 +7777,7 @@ MyOsc.prototype = {
 
 	},
 
+	// stop oscillator at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -8650,6 +7786,7 @@ MyOsc.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8663,6 +7800,7 @@ MyOsc.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API PannerNode
 function MyPanner(x, y, z){
 
 	this.input = audioCtx.createGain();
@@ -8684,6 +7822,7 @@ MyPanner.prototype = {
 
 	output: this.output,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8697,6 +7836,7 @@ MyPanner.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API Panner node limited to x-axis panning
 function MyPanner2(position){
 
 	this.input = audioCtx.createGain();
@@ -8729,12 +7869,14 @@ MyPanner2.prototype = {
 	gainL: this.gainL,
 	gainR: this.gainR,
 
+	// set position immediately
 	setPosition: function(position){
 		this.position = (position+1)/2;
 		this.gainL.gain.value = 1-this.position;
 		this.gainR.gain.value = this.position;
 	},
 
+	// set position at specified time (in seconds)
 	setPositionAtTime: function(position, time){
 
 		this.time = time;
@@ -8745,6 +7887,7 @@ MyPanner2.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8758,6 +7901,7 @@ MyPanner2.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API PeriodicWave
 function MyPeriodicOscillator(frequency, realArray, imagArray){
 
 	this.frequency = frequency;
@@ -8785,6 +7929,7 @@ MyPeriodicOscillator.prototype = {
 	frequency: this.frequency,
 	wave: this.wave,
 
+	// start oscillator immediately
 	start: function(){
 		this.osc = audioCtx.createOscillator();
 		this.osc.setPeriodicWave(this.wave);
@@ -8793,10 +7938,12 @@ MyPeriodicOscillator.prototype = {
 		this.osc.start();
 	},
 
+	// stop oscillator immediately
 	stop: function(){
 		this.osc.stop();
 	},
 
+	// start oscillator at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -8809,6 +7956,7 @@ MyPeriodicOscillator.prototype = {
 
 	},
 
+	// stop oscillator at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -8817,6 +7965,7 @@ MyPeriodicOscillator.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8825,10 +7974,12 @@ MyPeriodicOscillator.prototype = {
 			this.output.connect(audioNode);
 		}
 	},
+
 }
 
 //--------------------------------------------------------------
 
+// basic stereo delay using the Web Audio API DelayNode
 function MyStereoDelay(delayTimeL, delayTimeR, feedbackGainValue, dryWetMix){
 
 	this.delayTimeL = delayTimeL;
@@ -8896,6 +8047,7 @@ MyStereoDelay.prototype = {
 	feedbackGainValue: this.feedbackGainValue,
 	dryWetMix: this.dryWetMix,
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -8908,6 +8060,7 @@ MyStereoDelay.prototype = {
 
 //--------------------------------------------------------------
 
+// adaptation of the Web Audio API WaveShaperNode
 function MyWaveShaper(){
 
 	this.input = audioCtx.createGain();
@@ -8926,6 +8079,7 @@ MyWaveShaper.prototype = {
 	output: this.output,
 	waveShaper: this.waveShaper,
 
+	// fill waveshaper with a single value
 	makeConstant: function(value){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -8940,6 +8094,7 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with random values
 	makeNoise: function(rangeMin, rangeMax){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -8956,6 +8111,7 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with a sawtooth wave
 	makeSawtooth: function(exp){
 
 		this.exp = exp;
@@ -8972,6 +8128,7 @@ MyWaveShaper.prototype = {
 
 	},
 
+	// fill waveshaper with an inverse sawtooth wave
 	makeInverseSawtooth: function(exp){
 
 		this.exp = exp;
@@ -8987,6 +8144,7 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with a square wave
 	makeSquare: function(dutyCycle){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -9008,6 +8166,7 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with a triangle wave
 	makeTriangle: function(){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -9028,6 +8187,7 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with a sine wave
 	makeSine: function(){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -9053,6 +8213,7 @@ MyWaveShaper.prototype = {
 
 	},
 
+	// fill waveshaper with a unipolar sine wave
 	makeUnipolarSine: function(){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -9069,6 +8230,8 @@ MyWaveShaper.prototype = {
 
 	},
 
+	// fill waveshaper with a random arrangement of values within a specified
+	// range, with the number of values specified by "quant"
 	quantizedWavetable: function(quant, rangeMin, rangeMax){
 
 	    var n_samples = audioCtx.sampleRate;
@@ -9095,6 +8258,8 @@ MyWaveShaper.prototype = {
 
  	},
 
+	// fill waveshaper with a random arrangment of a series of values,
+	// with the number of values specified by "quant"
  	quantizedArrayWavetable: function(quant, valueArray){
 
 	    var n_samples = audioCtx.sampleRate;
@@ -9120,6 +8285,7 @@ MyWaveShaper.prototype = {
 
  	},
 
+	// fill waveshaper with a sigmoid function
  	makeSigmoid: function(amount){
 
  	var k = amount;
@@ -9137,6 +8303,7 @@ MyWaveShaper.prototype = {
 
  	},
 
+	// fill waveshaper with a line between specified points
 	makeRamp: function(rampStart, rampEnd){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -9153,6 +8320,7 @@ MyWaveShaper.prototype = {
 		this.waveShaper.curve = this.curve;
 	},
 
+	// fill waveshaper with the sum of multiple sine waves
 	additiveBlend: function(ratioArray, ampArray){
 
 		this.nSamples = audioCtx.sampleRate;
@@ -9177,6 +8345,7 @@ MyWaveShaper.prototype = {
 
 	},
 
+	// fill waveshaper with a frequency-modulated sine wave
 	makeFm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -9207,6 +8376,7 @@ MyWaveShaper.prototype = {
 
 	},
 
+	// fill waveshaper with an amplitude-modulated sine wave
 	makeAm: function(cFreq, mFreq, mGain){
 
 		this.twoPi = Math.PI*2;
@@ -9237,6 +8407,7 @@ MyWaveShaper.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -9250,10 +8421,12 @@ MyWaveShaper.prototype = {
 
 //--------------------------------------------------------------
 
-// PRESETS
+// PRESETS (3)
+//  - objects for storing commonly used configurations of certain nodes
 
 //--------------------------------------------------------------
 
+// collection of commonly used configurations of MyBuffer
 function BufferPreset(){
 
 	this.output = audioCtx.createGain();
@@ -9272,6 +8445,7 @@ BufferPreset.prototype = {
 
 	playbackRateInlet: this.playbackRateInlet,
 
+	// preset 1
 	preset1: function(){
 
 		this.myBuffer = new MyBuffer(1, 1, audioCtx.sampleRate);
@@ -9282,6 +8456,7 @@ BufferPreset.prototype = {
 
 	},
 
+	// preset 2
 	cBP1: function(){
 
 		this.myBuffer = new MyBuffer(1, 1, audioCtx.sampleRate);
@@ -9292,6 +8467,7 @@ BufferPreset.prototype = {
 
 	},
 
+	// start buffer immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.loop = this.loop;
@@ -9302,10 +8478,12 @@ BufferPreset.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop buffer immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// start buffer at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -9320,6 +8498,7 @@ BufferPreset.prototype = {
 
 	},
 
+	// stop buffer at specified time (in  seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -9328,6 +8507,7 @@ BufferPreset.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -9341,6 +8521,7 @@ BufferPreset.prototype = {
 
 //--------------------------------------------------------------
 
+// collection of commonly used configurations of MyConvolver
 function ConvolverPreset(){
 
 	this.input = audioCtx.createGain();
@@ -9354,6 +8535,7 @@ ConvolverPreset.prototype = {
 	output: this.output,
 	convolver: this.convolver,
 
+	// preset 1
 	noiseReverb: function(length, decayExp){
 
 		this.length = length;
@@ -9370,7 +8552,8 @@ ConvolverPreset.prototype = {
 
 	},
 
-	preset1: function(){
+	// preset 2
+	preset2: function(){
 
 		this.convolver = new MyConvolver(1, 0.25, audioCtx.sampleRate);
 		this.convolver.makeAm(432, 432*2, 1);
@@ -9382,6 +8565,7 @@ ConvolverPreset.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -9395,6 +8579,7 @@ ConvolverPreset.prototype = {
 
 //--------------------------------------------------------------
 
+// collection of commonly used Envelopes
 function EnvelopePreset(){
 
 	this.output = audioCtx.createGain();
@@ -9408,6 +8593,7 @@ EnvelopePreset.prototype = {
 	envelopeBuffer: this.envelopeBuffer,
 	loop: this.loop,
 
+	// preset 1
 	evenRamp: function(length){
 
 		this.length = length;
@@ -9421,6 +8607,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// preset 2
 	customRamp: function(length, peakPoint, upExp, downExp){
 
 		this.length = length;
@@ -9437,6 +8624,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// preset 3
 	ee_pr1_pluck1: function(){
 
 		this.envelopeBuffer.makeExpEnvelope(
@@ -9448,6 +8636,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// preset 4
 	ee_pr2_pluck2: function(){
 
 		this.envelopeBuffer.makeEnvelope(
@@ -9458,6 +8647,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// start envelope immediately
 	start: function(){
 		this.bufferSource = audioCtx.createBufferSource();
 		this.bufferSource.buffer = this.buffer.buffer;
@@ -9466,10 +8656,12 @@ EnvelopePreset.prototype = {
 		this.bufferSource.start();
 	},
 
+	// stop envelope immediately
 	stop: function(){
 		this.bufferSource.stop();
 	},
 
+	// start envelope at specified time (in seconds)
 	startAtTime: function(time){
 
 		this.time = time;
@@ -9482,6 +8674,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// stop envelope at specified time (in seconds)
 	stopAtTime: function(time){
 
 		this.time = time;
@@ -9490,6 +8683,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// connect the output node of this object to the input of another
 	connect: function(audioNode){
 		if (audioNode.hasOwnProperty('input') == 1){
 			this.output.connect(audioNode.input);
@@ -9499,6 +8693,7 @@ EnvelopePreset.prototype = {
 		}
 	},
 
+	// create an envelope with exponential curves applied to each line segment
 	makeExpEnvelope: function(eArray, expArray){
 
 		this.eArray,
@@ -9510,6 +8705,7 @@ EnvelopePreset.prototype = {
 
 	},
 
+	// create an envelope
 	makeEnvelope: function(eArray){
 
 		this.eArray = eArray;
