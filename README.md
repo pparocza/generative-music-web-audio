@@ -2,15 +2,14 @@
 
 A collection of custom synthesizers and effects made with the Web Audio API
 
-  - [live piece made with this library](http://paulparoczai.hostingerapp.com/live/community_infinite_offline/community_infinite.html?__cf_chl_jschl_tk__=aae609b14446b8146b4fc487b8eb160d720261d3-1615345578-0-AXt1Gmu9jU9uzzjHQlAzgwjiOVU7p2jG9YFDz9pczrI1nDSwfooKTnFW23q9A3psWoHJvfBWcT0HRuQ5wG_Hp2lREXEcMHd5sUqjNl9-XMPXZppv0ropj2fje_N-biqUtpYpACD8vPSWSGS2GVuxW618X3dHEYLNM_aA8PwSfhAv9sOUmzmxPzCrp-0_R2DKl_IZqxNTiYy_xHRoIW8Y46AY7gA0oMbn5sv5kDVBYAPl3U0HksPrf-vUpLD77oVUf1TPV9t_AI2UCMxmFNZq2ekdvUzypUx3IaMCjubNmLCyhSKwHfmiCAVPjjOjm7cs81rc_Y40MoxW2zU-mf2ynqX7zJ8WuxGqng2Szu6C43rWugkR2ZnPgEQakIEcDZBx29TGsSYjZiKW85Vly3l5_nfZOpjq0tmsPBeSuC4bWxHvsXDwO_E2QqsBbCoqsA9FbRhLLKfy3LqVGD_z8zpwuH4)
-  - [collection of pieces made with this library](https://www.paulparoczai.net/#/webaudio/)
+## Live Pieces
 
-NOTE:
+[stack](https://pparocza.github.io/stack/) // [edge customer](https://pparocza.github.io/edge_customer/) // [n-stop designer](https://pparocza.github.io/n-stop_designer/) // [peach address](https://pparocza.github.io/peach_address/) // [assembly expression](https://pparocza.github.io/assembly_expression/) // [target equals blank](https://pparocza.github.io/target_equals_blank/) //  [upcast](https://pparocza.github.io/upcast/) // [await promise](https://pparocza.github.io/await_promise/) // [community infinite](https://pparocza.github.io/community_infinite/) // [from stone](https://pparocza.github.io/from_stone/) // [hsl](https://pparocza.github.io/hsl/) //  [&&gift](https://pparocza.github.io/-_gift/) // [living in the mouth](https://pparocza.github.io/living_in_the_mouth/) // [lotus ampersand](https://pparocza.github.io/lotus_ampersand/)
+
+## Note:
 
 - the "Piece Page Template" Release is a complete HTML/JS template for creating music in the same manner as in the pieces at the links above (to use, write your code in "runPatch()" in "script.js", and then run "index.html" in any browser)
 - since many of the files included in the template are specific to my own workflow, files containing synthesizers, effects, and utilities used directly for audio generation are detailed below (doc and API coming soon)
-
-<!-- INSTRUMENTS AND FX LIBRARY.js -->
 
 ### instruments_and_fx_library.js
   - a collection of custom processing, control, synthesis, and interface objects shared by all pieces made with this library
